@@ -1,0 +1,34 @@
+{
+	"name": "Python 3",
+	"image": "mcr.microsoft.com/devcontainers/python:0-3.11",
+	"postCreateCommand": "./.devcontainer/container.sh",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"bungcip.better-toml",
+				"editorconfig.editorconfig",
+				"matangover.mypy",
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"ms-python.black-formatter",
+				"ms-python.pylint",
+				"njpwerner.autodocstring",
+				"streetsidesoftware.code-spell-checker",
+				"yzhang.markdown-all-in-one"
+			],
+			"settings": {
+				"python.defaultInterpreterPath": "/usr/local/bin/python",
+				"black-formatter.path": [
+					"/usr/local/py-utils/bin/black"
+				],
+				"pylint.path": [
+					"/usr/local/py-utils/bin/pylint"
+				]
+			}
+		}
+	},
+	"runArgs": [
+		"--gpus",
+		"all" 
+	]
+}
