@@ -1,5 +1,11 @@
+"""
+**Hint:** during test for terms, consider assertion with eigenvalues.
+This approach make these unit-test combinadics agnostic.
+We could introduce abstraction for the combinadics, however, this is not worth the effort.
+"""
 import pytest
 import numpy as np
+import numpy.testing as npt
 import pystrel.terms as ps
 
 # pylint: disable=R0903,C0115
@@ -98,3 +104,69 @@ def test_collect_mixing_sector_ranks(terms: dict[str, dict], expected: set[int])
 def test_apply(terms: dict[str, dict], rank, expected):
     assert (ps.utils.apply(terms, np.zeros(
         (10, 10)), (0, 0), rank) == expected).all()
+
+
+def test_term_Jz():  # pylint: disable=C0103
+    L = 4
+    sector = (L, L//2)
+    size = 6
+    params = {(i, (i+1) % L): 1.0 for i in range(L-1)}
+    matrix = np.zeros((size, size))
+
+    matrix = ps.Term_Jz.apply(params, matrix, sector)
+    eig = np.linalg.eigvalsh(matrix, 'U')
+
+    assert (eig == np.array([-3.0, -3, -1, -1, 1, 1])).all()
+
+
+def test_term_hz():
+    L = 4
+    sector = (L, L//2)
+    size = 6
+    params = {0: 1.0, 1: 2.0, 2: 4.0, 3: 8.0}
+    matrix = np.zeros((size, size))
+
+    matrix = ps.Term_hz.apply(params, matrix, sector)
+    eig = np.linalg.eigvalsh(matrix, 'U')
+
+    assert (eig == np.array([-9.0, -5, -3, +3, +5, +9])).all()
+
+
+def test_term_gamma():
+    L = 4
+    sector = (L, L//2)
+    size = 6
+    params = {(i, (i+1) % L): 1.0 for i in range(L)}
+    matrix = np.zeros((size, size))
+
+    matrix = ps.Term_gamma.apply(params, matrix, sector)
+    eig = np.linalg.eigvalsh(matrix, 'U')
+
+    npt.assert_allclose(eig, np.array(
+        [-np.sqrt(8), 0, 0, 0, 0, +np.sqrt(8)]), atol=1e-7)
+
+
+def test_term_hx():
+    L = 4
+    sector = (L, L//2)
+    params = {i: 1.0 for i in range(L)}
+    matrix = np.zeros((6, 4))
+
+    matrix = ps.Term_hx.apply(params, matrix, sector)
+
+    m = np.zeros((10, 10))
+    m[:6, 6:] = matrix
+    eig = np.linalg.eigvalsh(m, 'U')
+
+    npt.assert_allclose(eig, np.array([
+        -np.sqrt(6),
+        -np.sqrt(2),
+        -np.sqrt(2),
+        -np.sqrt(2),
+        0,
+        0,
+        +np.sqrt(2),
+        np.sqrt(2),
+        np.sqrt(2),
+        np.sqrt(6)
+    ]), atol=1e-7)
