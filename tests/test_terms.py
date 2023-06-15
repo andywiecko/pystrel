@@ -6,9 +6,11 @@ We could introduce abstraction for the combinadics, however, this is not worth t
 import pytest
 import numpy as np
 import numpy.testing as npt
+import scipy.special as sps # type: ignore
 import pystrel.terms as ps
 
-# pylint: disable=R0903,C0115
+
+# pylint: disable=R0903,C0115,R0801
 
 
 class FakeTermRank0(ps.Term):
@@ -48,6 +50,8 @@ class FakeTermRank2(ps.Term):
     def apply(params: dict, matrix: np.ndarray, sector: tuple[int, int]):
         matrix[:] += 4.0
         return matrix
+
+# pylint: enable=R0903,C0115,R0801
 
 
 ps.utils.register_term_type(FakeTermRank0)
@@ -170,3 +174,97 @@ def test_term_hx():
         np.sqrt(2),
         np.sqrt(6)
     ]), atol=1e-7)
+
+
+@pytest.mark.parametrize("L, N", [
+    (4, 0), (4, 1), (4, 2), (4, 3), (4, 4),
+    (5, 0), (5, 1), (5, 2), (5, 3), (5, 4), (5, 5),
+    (6, 0), (6, 1), (6, 2), (6, 3), (6, 4), (6, 5), (6, 6),
+])
+def test_term_t(L, N):
+    sector = (L, N)
+    size = int(sps.binom(L, N))
+    params = {(i, (i+1) % L): 1.0 for i in range(L)}
+    matrix = np.zeros((size, size))
+
+    matrix = ps.Term_t.apply(params, matrix, sector)
+    eig = np.linalg.eigvalsh(matrix, 'U')
+
+    # It can be shown that model ∑ᵢⱼ a†ᵢaⱼ + h.c.
+    # analytical solution for dispersion relation is given by:
+    #
+    # e(k) = 2 cos(k),
+    #
+    # where k = 2pi/L*l, l = 0, 1, ..., L-1
+    ek = [2 * np.cos(2 * np.pi / L * i) for i in range(L)]
+    E = [sum(ek[id] for id, i in
+             enumerate(ps.combinadics.tostate(j, L, N)) if i == '1') for j in range(size)]
+    E.sort()
+    npt.assert_allclose(eig, E, atol=1e-7)
+
+
+def test_term_V(): # pylint: disable=C0103
+    L = 4
+    N = 2
+    size = int(sps.binom(L, N))
+    params = {(0, 1): 1.0, (1, 2): 2.0, (2, 3): 4.0, (3, 0): -1}
+    matrix = np.zeros((size, size))
+
+    matrix = ps.Term_V.apply(params, matrix, (L, N))
+    eig = np.linalg.eigvalsh(matrix, 'U')
+
+    npt.assert_array_equal(eig, [-1.0, 0, 0, 1, 2, 4])
+
+
+@pytest.mark.parametrize("L, P", [
+    (3, 0), (3, 1),
+    (4, 0), (4, 1),
+    (5, 0), (5, 1),
+    (6, 0), (6, 1),
+    (7, 0), (7, 1),
+])
+def test_term_Delta(L: int, P: int): # pylint: disable=C0103,R0914
+    size = 2**(L-1)
+    params = {(i, (i+1) % L): 1.0 for i in range(L)}
+    matrix = np.zeros((size, size))
+    particles = [i for i in range(L+1) if i % 2 == P]
+
+    offset = 0
+    for N in particles[:-1]:
+        sizeA = int(sps.binom(L, N))
+        sizeB = int(sps.binom(L, N+2))
+        a0 = offset
+        a1 = a0 + sizeA
+        b0 = offset + sizeA
+        b1 = b0 + sizeB
+        matrix[a0:a1, b0:b1] = ps.Term_Delta.apply(
+            params, matrix[a0:a1, b0:b1], (L, N))
+        offset += sizeA
+    eig = np.linalg.eigvalsh(matrix, 'U')
+
+    # It can be shown that model ∑ᵢⱼ a†ᵢa†ⱼ + h.c.
+    # analytical solution for dispersion relation is given by:
+    #
+    # e(k) = ±2 |sin(k)|
+    #
+    # where k = 2pi/L*l, l = 0, 1, ..., L-1.
+    ek = [2 * np.abs(np.sin(2 * np.pi / L * i)) for i in range((L+1) // 2)]
+    ek += [-e for e in (ek if L % 2 == 0 else ek[1:])]
+    E = [sum(ek[id] for id, i in
+             enumerate(ps.combinadics.tostate(j, L, N)) if i == '1') for N in
+         particles for j in range(int(sps.binom(L, N)))]
+    E.sort()
+    npt.assert_allclose(eig, E, atol=1e-7)
+
+
+def test_term_mu():
+    L = 4
+    N = 2
+    size = int(sps.binom(L, N))
+    params = {0: 1.0, 1: 2, 2: 4, 3: 8}
+    matrix = np.zeros((size, size))
+
+    matrix = ps.Term_mu.apply(params, matrix, (L, N))
+    eig = np.linalg.eigvalsh(matrix, 'U')
+
+    npt.assert_array_equal(eig, [3.0, 5, 6, 9, 10, 12])
