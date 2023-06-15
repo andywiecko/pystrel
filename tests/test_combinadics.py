@@ -76,3 +76,24 @@ def test_tonumber(state: str, expected: int):
 ])
 def test_tostate(number: int, L: int, N: int, expected: str):
     assert ps.combinadics.tostate(number, L, N) == expected
+
+
+@pytest.mark.parametrize("state, i, j, expected", [
+    ("0000", 0, 3, 0),
+    ("0100", 0, 3, 1),
+    ("0010", 0, 3, 1),
+    ("0110", 0, 3, 2),
+    ("1110", 0, 3, 2),
+    ("1111", 0, 3, 2),
+
+    ("0000", 3, 0, 0),
+    ("0100", 3, 0, 1),
+    ("0010", 3, 0, 1),
+    ("0110", 3, 0, 2),
+    ("1110", 3, 0, 2),
+    ("1111", 3, 0, 2),
+
+    ("1111", 0, 0, 0),
+])
+def test_count_particles_between(state: str, i: int, j: int, expected: int):
+    assert ps.combinadics.count_particles_between(state, i, j) == expected

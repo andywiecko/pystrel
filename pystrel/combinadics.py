@@ -67,3 +67,25 @@ def tostate(number: int, n: int, k: int) -> str:
         ret = ret[:n] + '1' + ret[n+1:]
         Nt -= int(sps.binom(n, k - i))
     return ret[::-1]
+
+
+def count_particles_between(state: str, i: int, j: int) -> int:
+    """Counts particles, i.e. '1' between `i` and `j` site for given `state`.
+
+    Parameters
+    ----------
+    state : str
+        State, which represent the combination, e.g. `0010110`, `1110101`, ...
+        where `1` correspond to selected element in combination, 
+        and `0` otherwise.
+    i : int
+        Site start.
+    j : int
+        Site end.
+
+    Returns
+    -------
+    int
+        Particles count.
+    """
+    return (state[i+1:j] if i < j else state[j+1:i]).count('1')
