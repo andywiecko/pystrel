@@ -1,0 +1,34 @@
+name: Pytest
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+
+      - name: Install Flit
+        run: pip install flit
+
+      - name: Build and install package
+        run: flit install
+
+      - name: Run tests
+        run: pytest
+
+      - name: Run pylint
+        run: pylint pystrel/ tests/
+
+      - name: Run mypy
+        run: mypy

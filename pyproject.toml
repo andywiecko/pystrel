@@ -26,7 +26,6 @@ dev = [
     "pylint-per-file-ignores >= 1.2.0",
     "pytest >= 7.3.1",
     "pdoc",
-    "cupy",
 ]
 
 [project.urls]
