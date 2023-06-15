@@ -1,0 +1,48 @@
+name: website
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install Flit
+        run: pip install flit
+
+      - name: Build and install package
+        run: flit install
+
+      - name: Build docs
+        run: pdoc --math --docformat=numpy pystrel/ -o site/
+
+      - name: Upload artifacts
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: docs/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v2
