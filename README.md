@@ -50,11 +50,16 @@ TBA
 
 ## Installation
 
-TBA (after releasing v1, package should be upload to pip)
+TBA (after releasing v1, package should be uploaded to pip)
+
+## Accelerate computation with GPU
+
+This package is designed to easily switch between CPU and GPU target devices. 
+To enable GPU computation, you need to install [`CUDA`][CUDA]/[`ROCm`][ROCM] (depending on the GPU manufacturer) and then [`cupy`][cupy].
 
 ## Example
 
-To explore the supported options for the `Model`, please visit the [documentation page](https://andywiecko.github.io/pystrel).
+To explore the supported options for the `Model`, please visit the [documentation page][docs].
 
 ```python
 import numpy as np
@@ -88,3 +93,9 @@ List of the tasks to consider before the first release:
 - [ ] example notebooks
 - [ ] benchmarks
 - [ ] ci/cd: ~~test~~, ~~pylint~~, ~~mypy~~, black, ~~pdoc~~
+- [ ] resolve numpy matrix warnings
+
+[CUDA]:https://developer.nvidia.com/cuda-downloads
+[ROCm]:https://github.com/RadeonOpenCompute/ROCm
+[cupy]:https://cupy.dev/
+[docs]:https://andywiecko.github.io/pystrel
