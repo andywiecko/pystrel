@@ -14,7 +14,8 @@
 				"ms-python.pylint",
 				"njpwerner.autodocstring",
 				"streetsidesoftware.code-spell-checker",
-				"yzhang.markdown-all-in-one"
+				"yzhang.markdown-all-in-one",
+				"ms-toolsai.jupyter"
 			],
 			"settings": {
 				"python.defaultInterpreterPath": "/usr/local/bin/python",
