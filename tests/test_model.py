@@ -120,3 +120,18 @@ def test_model_build_hamiltonian_case2():
         [4., 2., 2., 2., 1., 1., 1., 2.],
         [0., 4., 4., 4., 2., 2., 2., 1.],
     ]))
+
+
+@pytest.mark.parametrize("dtype", [
+    np.float32,
+    np.float64,
+    np.complex64,
+    np.complex128
+])
+@pytest.mark.parametrize("sparsity", [
+    "dense", "sparse"
+])
+def test_model_dtype(dtype, sparsity):
+    m = ps.Model({})
+    h = m.build_hamiltonian(sparsity=sparsity, dtype=dtype)
+    assert h.dtype == dtype

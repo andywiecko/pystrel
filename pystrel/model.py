@@ -13,6 +13,7 @@ Supported keys for `Model` `params`:
 """
 import typing
 import numpy as np
+import numpy.typing as npt
 import scipy.sparse as nps  # type: ignore
 import scipy.special as sps  # type: ignore
 try:
@@ -77,7 +78,8 @@ class Model:
     def build_hamiltonian(
         self,
         device: typing.Literal["cpu", "gpu"] = "cpu",
-        sparsity: typing.Literal["sparse", "dense"] = "dense"
+        sparsity: typing.Literal["sparse", "dense"] = "dense",
+        dtype: npt.DTypeLike = None
     ) -> np.matrix | nps.csr_matrix | typing.Any:
         """
         Constructs hamiltonian on the selected `device` and matrix `sparsity` type.
@@ -89,7 +91,9 @@ class Model:
         sparsity : typing.Literal["sparse", "dense"], optional
             Matrix sparsity type which is used, by default "dense".
             If "sparse" is selected, returns matrix in CSR format.
-
+        dtype : npt.DTypeLike, optional
+            Any object that can be interpreted as a numpy data type.
+            
         Returns
         -------
         np.matrix | nps.csr_matrix | Any
@@ -110,7 +114,7 @@ class Model:
         shape = (self.__size, self.__size)
         match sparsity:
             case "dense":
-                matrix = np.matrix(np.zeros(shape))
+                matrix = np.matrix(np.zeros(shape), dtype=dtype)
                 self.__build_local_sectors(matrix)
                 self.__build_mixing_sectors(matrix)
                 matrix = matrix + np.matrix(np.triu(matrix, 1)).H
@@ -121,7 +125,7 @@ class Model:
                 raise ValueError()
 
             case "sparse":
-                matrix = nps.dok_matrix(shape)
+                matrix = nps.dok_matrix(shape, dtype=dtype)
                 self.__build_local_sectors(matrix)
                 self.__build_mixing_sectors(matrix)
                 matrix = nps.csr_matrix(matrix + nps.triu(matrix, 1).H)
