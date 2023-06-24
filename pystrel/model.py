@@ -80,7 +80,7 @@ class Model:
         device: typing.Literal["cpu", "gpu"] = "cpu",
         sparsity: typing.Literal["sparse", "dense"] = "dense",
         dtype: npt.DTypeLike = None
-    ) -> np.matrix | nps.csr_matrix | typing.Any:
+    ) -> np.ndarray | nps.csr_matrix | typing.Any:
         """
         Constructs hamiltonian on the selected `device` and matrix `sparsity` type.
 
@@ -96,7 +96,7 @@ class Model:
             
         Returns
         -------
-        np.matrix | nps.csr_matrix | Any
+        np.ndarray | nps.csr_matrix | Any
             Hamiltonian matrix representation.
 
         Raises
@@ -114,10 +114,10 @@ class Model:
         shape = (self.__size, self.__size)
         match sparsity:
             case "dense":
-                matrix = np.matrix(np.zeros(shape), dtype=dtype)
+                matrix = np.zeros(shape, dtype=dtype)
                 self.__build_local_sectors(matrix)
                 self.__build_mixing_sectors(matrix)
-                matrix = matrix + np.matrix(np.triu(matrix, 1)).H
+                matrix = matrix + np.conjugate(np.triu(matrix, 1)).T
                 if device == "cpu":
                     return matrix
                 if device == "gpu":
