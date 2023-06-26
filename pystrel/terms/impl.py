@@ -17,10 +17,10 @@ class Term_Jz(Term):
     \sum_{i,j} J_{ij}^z \, \sigma_i^z \sigma_j^z.
     $$
     """
-    tag = 'Jz'
-    particle_type = 'spins 1/2'
-    ensemble = 'canonical'
-    repr = '∑ᵢⱼ Jᶻᵢⱼ σᶻᵢσᶻⱼ'
+    tag = "Jz"
+    particle_type = "spins 1/2"
+    ensemble = "canonical"
+    repr = "∑ᵢⱼ Jᶻᵢⱼ σᶻᵢσᶻⱼ"
     mixing_rank = 0
 
     @staticmethod
@@ -41,10 +41,10 @@ class Term_hz(Term):
     \sum_{i} h_{i}^z \, \sigma_i^z.
     $$
     """
-    tag = 'hz'
-    particle_type = 'spins 1/2'
-    ensemble = 'canonical'
-    repr = '∑ᵢ hᶻᵢ σᶻᵢ'
+    tag = "hz"
+    particle_type = "spins 1/2"
+    ensemble = "canonical"
+    repr = "∑ᵢ hᶻᵢ σᶻᵢ"
     mixing_rank = 0
 
     @staticmethod
@@ -52,7 +52,7 @@ class Term_hz(Term):
         for x in range(matrix.shape[0]):
             s = combinadics.tostate(x, sector[0], sector[1])
             for i, hz in params.items():
-                matrix[x, x] += (+1 if s[i] == '1' else -1) * hz
+                matrix[x, x] += (+1 if s[i] == "1" else -1) * hz
         return matrix
 
 
@@ -65,10 +65,10 @@ class Term_gamma(Term):
     \sum_{i,j} \left(\gamma_{ij} \, \sigma_i^+\sigma_j^- + \text{h.c.}\right).
     $$
     """
-    tag = 'gamma'
-    particle_type = 'spins 1/2'
-    ensemble = 'canonical'
-    repr = '∑ᵢⱼ (γᵢⱼ σ⁺ᵢσ⁻ⱼ + h.c.)'
+    tag = "gamma"
+    particle_type = "spins 1/2"
+    ensemble = "canonical"
+    repr = "∑ᵢⱼ (γᵢⱼ σ⁺ᵢσ⁻ⱼ + h.c.)"
     mixing_rank = 0
 
     @staticmethod
@@ -76,9 +76,9 @@ class Term_gamma(Term):
         for x in range(matrix.shape[0]):
             s0 = combinadics.tostate(x, sector[0], sector[1])
             for (i, j), gamma in params.items():
-                if s0[i] == '1' and s0[j] == '0':
-                    s1 = s0[:i] + '0' + s0[i+1:]
-                    s1 = s1[:j] + '1' + s1[j+1:]
+                if s0[i] == "1" and s0[j] == "0":
+                    s1 = s0[:i] + "0" + s0[i + 1 :]
+                    s1 = s1[:j] + "1" + s1[j + 1 :]
                     y = combinadics.tonumber(s1)
                     if x < y:
                         matrix[x, y] += gamma
@@ -96,10 +96,10 @@ class Term_hx(Term):
     \sum_{i} h_{i}^x \, \sigma_i^x.
     $$
     """
-    tag = 'hx'
-    particle_type = 'spins 1/2'
-    ensemble = 'grand canonical'
-    repr = '∑ᵢ hˣᵢ σˣᵢ'
+    tag = "hx"
+    particle_type = "spins 1/2"
+    ensemble = "grand canonical"
+    repr = "∑ᵢ hˣᵢ σˣᵢ"
     mixing_rank = 1
 
     @staticmethod
@@ -107,8 +107,8 @@ class Term_hx(Term):
         for x in range(matrix.shape[0]):
             s0 = combinadics.tostate(x, sector[0], sector[1])
             for i, gamma in params.items():
-                if s0[i] == '0':
-                    s1 = s0[:i] + '1' + s0[i+1:]
+                if s0[i] == "0":
+                    s1 = s0[:i] + "1" + s0[i + 1 :]
                     y = combinadics.tonumber(s1)
                     matrix[x, y] += gamma
         return matrix
@@ -123,10 +123,10 @@ class Term_t(Term):
     \sum_{i,j} \left(t_{ij} \, a_i^\dagger a_j + \text{h.c.}\right).
     $$
     """
-    tag = 't'
-    particle_type = 'spinless fermions'
-    ensemble = 'canonical'
-    repr = '∑ᵢⱼ (tᵢⱼ a†ᵢaⱼ + h.c.)'
+    tag = "t"
+    particle_type = "spinless fermions"
+    ensemble = "canonical"
+    repr = "∑ᵢⱼ (tᵢⱼ a†ᵢaⱼ + h.c.)"
     mixing_rank = 0
 
     @staticmethod
@@ -134,11 +134,11 @@ class Term_t(Term):
         for x in range(matrix.shape[0]):
             s0 = combinadics.tostate(x, sector[0], sector[1])
             for (i, j), t in params.items():
-                if s0[i] == '1' and s0[j] == '0':
-                    s1 = s0[:i] + '0' + s0[i+1:]
-                    s1 = s1[:j] + '1' + s1[j+1:]
+                if s0[i] == "1" and s0[j] == "0":
+                    s1 = s0[:i] + "0" + s0[i + 1 :]
+                    s1 = s1[:j] + "1" + s1[j + 1 :]
                     y = combinadics.tonumber(s1)
-                    sign = (-1.0)**combinadics.count_particles_between(s0, i, j)
+                    sign = (-1.0) ** combinadics.count_particles_between(s0, i, j)
                     if x < y:
                         matrix[x, y] += sign * t
                     else:
@@ -155,10 +155,10 @@ class Term_V(Term):
     \sum_{i,j} V_{ij} \, n_i n_j.
     $$
     """
-    tag = 'V'
-    particle_type = 'spinless fermions'
-    ensemble = 'canonical'
-    repr = '∑ᵢⱼ Vᵢⱼ nᵢnⱼ'
+    tag = "V"
+    particle_type = "spinless fermions"
+    ensemble = "canonical"
+    repr = "∑ᵢⱼ Vᵢⱼ nᵢnⱼ"
     mixing_rank = 0
 
     @staticmethod
@@ -166,7 +166,7 @@ class Term_V(Term):
         for x in range(matrix.shape[0]):
             s = combinadics.tostate(x, sector[0], sector[1])
             for (i, j), V in params.items():
-                if s[i] == '1' and s[j] == '1':
+                if s[i] == "1" and s[j] == "1":
                     matrix[x, x] += V
         return matrix
 
@@ -180,10 +180,10 @@ class Term_Delta(Term):
     \sum_{i,j} \left(\Delta_{ij} \, a_i^\dagger a_j^\dagger + \text{h.c.}\right).
     $$
     """
-    tag = 'Delta'
-    particle_type = 'spinless fermions'
-    ensemble = 'parity grand canonical'
-    repr = '∑ᵢⱼ (Δᵢⱼ a†ᵢa†ⱼ + h.c.)'
+    tag = "Delta"
+    particle_type = "spinless fermions"
+    ensemble = "parity grand canonical"
+    repr = "∑ᵢⱼ (Δᵢⱼ a†ᵢa†ⱼ + h.c.)"
     mixing_rank = 2
 
     @staticmethod
@@ -191,11 +191,11 @@ class Term_Delta(Term):
         for x in range(matrix.shape[0]):
             s0 = combinadics.tostate(x, sector[0], sector[1])
             for (i, j), Delta in params.items():
-                if s0[i] == '0' and s0[j] == '0':
-                    s1 = s0[:i] + '1' + s0[i+1:]
-                    s1 = s1[:j] + '1' + s1[j+1:]
+                if s0[i] == "0" and s0[j] == "0":
+                    s1 = s0[:i] + "1" + s0[i + 1 :]
+                    s1 = s1[:j] + "1" + s1[j + 1 :]
                     y = combinadics.tonumber(s1)
-                    sign = (-1.0)**combinadics.count_particles_between(s0, i, j)
+                    sign = (-1.0) ** combinadics.count_particles_between(s0, i, j)
                     sign = sign if i < j else -sign
                     matrix[x, y] += sign * Delta
         return matrix
@@ -210,10 +210,10 @@ class Term_mu(Term):
     \sum_{i} \mu_{i} \, n_i .
     $$
     """
-    tag = 'mu'
-    particle_type = 'spinless fermions'
-    ensemble = 'canonical'
-    repr = '∑ᵢ μᵢ nᵢ'
+    tag = "mu"
+    particle_type = "spinless fermions"
+    ensemble = "canonical"
+    repr = "∑ᵢ μᵢ nᵢ"
     mixing_rank = 0
 
     @staticmethod
@@ -221,7 +221,7 @@ class Term_mu(Term):
         for x in range(matrix.shape[0]):
             s = combinadics.tostate(x, sector[0], sector[1])
             for i, mu in params.items():
-                if s[i] == '1':
+                if s[i] == "1":
                     matrix[x, x] += mu
         return matrix
 

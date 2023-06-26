@@ -95,7 +95,7 @@ List of the tasks to consider before the first release:
 - [ ] parameters json/yaml load
 - [ ] example notebooks
 - [ ] benchmarks
-- [ ] ci/cd: ~~test~~, ~~pylint~~, ~~mypy~~, black, ~~pdoc~~
+- [X] ~~ci/cd~~
 
 [CUDA]:https://developer.nvidia.com/cuda-downloads
 [ROCm]:https://github.com/RadeonOpenCompute/ROCm
