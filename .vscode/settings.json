@@ -9,5 +9,7 @@
     "cSpell.words": [
         "tonumber",
         "tostate"
-    ]
+    ],
+    "python.formatting.provider": "black",
+    "python.formatting.blackPath": "black"
 }

@@ -12,23 +12,19 @@ from . import impl
 __tag_to_term: dict[str, typing.Type[Term]] = {}
 
 __particle_type_tags: dict[str, set[str]] = {
-    'spinless fermions': {*()},
-    'spins 1/2': {*()},
-    'spinfull fermions': {*()},
-    'tj quasiparticles': {*()}
+    "spinless fermions": {*()},
+    "spins 1/2": {*()},
+    "spinfull fermions": {*()},
+    "tj quasiparticles": {*()},
 }
 
 __ensemble_tags: dict[str, set[str]] = {
-    'grand canonical': {*()},
-    'parity grand canonical': {*()},
-    'canonical': {*()},
+    "grand canonical": {*()},
+    "parity grand canonical": {*()},
+    "canonical": {*()},
 }
 
-__mixing_sectors_ranks_tags: dict[int, set[str]] = {
-    0: {*()},
-    1: {*()},
-    2: {*()}
-}
+__mixing_sectors_ranks_tags: dict[int, set[str]] = {0: {*()}, 1: {*()}, 2: {*()}}
 
 
 class _DuplicateTagError(Exception):  # pylint: disable=C0115
@@ -52,9 +48,9 @@ def term__str__(term_type: str) -> str:
     return __tag_to_term[term_type].repr
 
 
-def identify_particle_type(terms: dict[str, dict]) -> typing.Literal[
-    'spinless fermions', 'spins 1/2', 'spinfull fermions', 'undefined'
-]:
+def identify_particle_type(
+    terms: dict[str, dict]
+) -> typing.Literal["spinless fermions", "spins 1/2", "spinfull fermions", "undefined"]:
     """
     Identifies the particle type for given `terms`.
 
@@ -68,17 +64,19 @@ def identify_particle_type(terms: dict[str, dict]) -> typing.Literal[
     'spinless fermions' | 'spins 1/2' | 'spinfull fermions' | 'undefined'
         Particle string.
     """
-    if all(t in __particle_type_tags['spinless fermions'] for t in terms):
-        return 'spinless fermions'
-    if all(t in __particle_type_tags['spinfull fermions'] for t in terms):
-        return 'spinfull fermions'
-    if all(t in __particle_type_tags['spins 1/2'] for t in terms):
-        return 'spins 1/2'
-    return 'undefined'
+    if all(t in __particle_type_tags["spinless fermions"] for t in terms):
+        return "spinless fermions"
+    if all(t in __particle_type_tags["spinfull fermions"] for t in terms):
+        return "spinfull fermions"
+    if all(t in __particle_type_tags["spins 1/2"] for t in terms):
+        return "spins 1/2"
+    return "undefined"
 
 
-def identify_ensemble(terms: dict[str, dict]) -> typing.Literal[
-    'grand canonical', 'parity grand canonical', 'canonical', 'undefined'
+def identify_ensemble(
+    terms: dict[str, dict]
+) -> typing.Literal[
+    "grand canonical", "parity grand canonical", "canonical", "undefined"
 ]:
     """
     Identify minimal ensemble required for representing the `terms`.
@@ -93,13 +91,13 @@ def identify_ensemble(terms: dict[str, dict]) -> typing.Literal[
     'grand canonical' | 'parity grand canonical' | 'canonical' | 'undefined'
         Ensemble string.
     """
-    if any(t in __ensemble_tags['grand canonical'] for t in terms):
-        return 'grand canonical'
-    if any(t in __ensemble_tags['parity grand canonical'] for t in terms):
-        return 'parity grand canonical'
-    if any(t in __ensemble_tags['canonical'] for t in terms):
-        return 'canonical'
-    return 'undefined'
+    if any(t in __ensemble_tags["grand canonical"] for t in terms):
+        return "grand canonical"
+    if any(t in __ensemble_tags["parity grand canonical"] for t in terms):
+        return "parity grand canonical"
+    if any(t in __ensemble_tags["canonical"] for t in terms):
+        return "canonical"
+    return "undefined"
 
 
 def collect_mixing_sector_ranks(terms: dict[str, dict]) -> set[int]:
@@ -127,10 +125,10 @@ def collect_mixing_sector_ranks(terms: dict[str, dict]) -> set[int]:
 
 
 def apply(
-        terms: dict[str, dict],
-        matrix: np.ndarray | nps.dok_matrix,
-        sector: tuple[int, int],
-        rank: int
+    terms: dict[str, dict],
+    matrix: np.ndarray | nps.dok_matrix,
+    sector: tuple[int, int],
+    rank: int,
 ) -> np.ndarray | nps.dok_matrix:
     """
     Applies all `terms` of given `rank` on `matrix` within given `sector`.
@@ -164,15 +162,15 @@ def info():
     """
     ret = ""
     for ptype, tags in __particle_type_tags.items():
-        ret += 15 * '-' + '\n'
+        ret += 15 * "-" + "\n"
         ret += ptype + "\n"
-        ret += 15 * '-' + '\n'
+        ret += 15 * "-" + "\n"
         for t in tags:
             ret += "- " + t + ": " + term__str__(t) + "\n"
         if len(tags) == 0:
-            ret += 'not implemented yet\n'
+            ret += "not implemented yet\n"
 
-        ret += '\n'
+        ret += "\n"
     print(ret)
 
 
@@ -201,7 +199,8 @@ def register_term_type(term_type: type):
         raise _DuplicateTagError(
             f"Duplicate tag is found {tag}! "
             f"Terms `{term_type.__name__}` and `{__tag_to_term[tag].__name__}`"
-            f" have the same tag `{tag}`.")
+            f" have the same tag `{tag}`."
+        )
 
     if term_type.mixing_rank not in [0, 1, 2]:
         raise ValueError(f"Rank {term_type.mixing_rank} is not supported!")

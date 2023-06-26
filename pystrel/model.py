@@ -16,6 +16,7 @@ import numpy as np
 import numpy.typing as npt
 import scipy.sparse as nps  # type: ignore
 import scipy.special as sps  # type: ignore
+
 try:
     import cupy as cp  # type: ignore
     import cupy.sparse as cps  # type: ignore
@@ -50,7 +51,7 @@ class Model:
             See module documentation for more details.
         """
         self.params: dict[str, typing.Any] = params
-        self.terms: dict[str, dict] = params.get('terms', {})
+        self.terms: dict[str, dict] = params.get("terms", {})
 
         self.__sector_offset: list[int] = []
         self.__sector_size: list[int] = []
@@ -58,11 +59,13 @@ class Model:
         self.sectors: list[tuple[int, int]] = []
         ensemble = terms.utils.identify_ensemble(self.terms)
         self.sectors = params.get(
-            'sectors', sectors.generate_sectors(ensemble, self.params))
+            "sectors", sectors.generate_sectors(ensemble, self.params)
+        )
 
         ranks = terms.utils.collect_mixing_sector_ranks(self.terms)
-        self.mixing_sectors: list[tuple[int, int]] = sectors\
-            .generate_mixing_sectors(ranks, self.sectors)
+        self.mixing_sectors: list[tuple[int, int]] = sectors.generate_mixing_sectors(
+            ranks, self.sectors
+        )
 
         self.__init_sectors()
 
@@ -79,7 +82,7 @@ class Model:
         self,
         device: typing.Literal["cpu", "gpu"] = "cpu",
         sparsity: typing.Literal["sparse", "dense"] = "dense",
-        dtype: npt.DTypeLike = None
+        dtype: npt.DTypeLike = None,
     ) -> np.ndarray | nps.csr_matrix | typing.Any:
         """
         Constructs hamiltonian on the selected `device` and matrix `sparsity` type.
@@ -93,7 +96,7 @@ class Model:
             If "sparse" is selected, returns matrix in CSR format.
         dtype : npt.DTypeLike, optional
             Any object that can be interpreted as a numpy data type.
-            
+
         Returns
         -------
         np.ndarray | nps.csr_matrix | Any
@@ -146,7 +149,7 @@ class Model:
                 terms=self.terms,
                 matrix=matrix[start:end, start:end],
                 sector=sector,
-                rank=0
+                rank=0,
             )
 
     def __build_mixing_sectors(self, matrix: np.ndarray | nps.dok_matrix):
@@ -159,18 +162,19 @@ class Model:
                 terms=self.terms,
                 matrix=matrix[start0:end0, start1:end1],
                 sector=self.sectors[id0],
-                rank=self.sectors[id1][1]-self.sectors[id0][1]
+                rank=self.sectors[id1][1] - self.sectors[id0][1],
             )
 
     def __str__(self):
-        return \
-            "# " + 16 * '#' + ' Info ' + 16 * '#' + "\n"\
-            f"# Particle type: {terms.utils.identify_particle_type(self.terms)}\n"\
-            "# Model: Ĥ = " + ' +\n#            '\
-            .join(terms.utils.term__str__(t) for t in self.terms) + '\n'\
-            f"# Space size: {self.__size} × {self.__size}\n"\
-            f"# Ensemble: {terms.utils.identify_ensemble(self.terms)}\n"\
-            f"# Sectors: {self.sectors}\n"\
-            "# Terms:\n"\
-            + "\n".join('# - ' + i + ': ' + str(j)
-                        for i, j in self.terms.items())
+        return (
+            "# " + 16 * "#" + " Info " + 16 * "#" + "\n"
+            f"# Particle type: {terms.utils.identify_particle_type(self.terms)}\n"
+            "# Model: Ĥ = "
+            + " +\n#            ".join(terms.utils.term__str__(t) for t in self.terms)
+            + "\n"
+            f"# Space size: {self.__size} × {self.__size}\n"
+            f"# Ensemble: {terms.utils.identify_ensemble(self.terms)}\n"
+            f"# Sectors: {self.sectors}\n"
+            "# Terms:\n"
+            + "\n".join("# - " + i + ": " + str(j) for i, j in self.terms.items())
+        )

@@ -13,7 +13,7 @@ def tonumber(state: str) -> int:
     ----------
     state : str
         State, which represent the combination, e.g. `0010110`, `1110101`, ...
-        where `1` correspond to selected element in combination, 
+        where `1` correspond to selected element in combination,
         and `0` otherwise.
 
     Returns
@@ -22,10 +22,10 @@ def tonumber(state: str) -> int:
         Number which corresponds to combination with given `state`.
     """
     ret = 0
-    k = state.count('1')
+    k = state.count("1")
     L = len(state)
     for i, s in enumerate(state):
-        if s == '1':
+        if s == "1":
             ret += int(sps.binom(L - 1 - i, k))
             k -= 1
 
@@ -49,14 +49,13 @@ def tostate(number: int, n: int, k: int) -> str:
     -------
     str
         State, which represent the combination, e.g. `0010110`, `1110101`, ...
-        where `1` correspond to selected element in combination, 
-        and `0` otherwise. 
+        where `1` correspond to selected element in combination,
+        and `0` otherwise.
     """
-    ret = '0' * n
+    ret = "0" * n
     Nt = number
 
     for i in range(k):
-
         n = k - i - 1
         while sps.binom(n, k - i) <= Nt:
             n += 1
@@ -64,7 +63,7 @@ def tostate(number: int, n: int, k: int) -> str:
         if sps.binom(n, k - i) > Nt:
             n -= 1
 
-        ret = ret[:n] + '1' + ret[n+1:]
+        ret = ret[:n] + "1" + ret[n + 1 :]
         Nt -= int(sps.binom(n, k - i))
     return ret[::-1]
 
@@ -76,7 +75,7 @@ def count_particles_between(state: str, i: int, j: int) -> int:
     ----------
     state : str
         State, which represent the combination, e.g. `0010110`, `1110101`, ...
-        where `1` correspond to selected element in combination, 
+        where `1` correspond to selected element in combination,
         and `0` otherwise.
     i : int
         Site start.
@@ -88,4 +87,4 @@ def count_particles_between(state: str, i: int, j: int) -> int:
     int
         Particles count.
     """
-    return (state[i+1:j] if i < j else state[j+1:i]).count('1')
+    return (state[i + 1 : j] if i < j else state[j + 1 : i]).count("1")
