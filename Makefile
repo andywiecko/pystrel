@@ -1,7 +1,7 @@
 .PHONY: docs
 
 test:
-	pytest
+	pytest --cov
 	mypy
 	pylint pystrel/ tests/
 	black --check .
