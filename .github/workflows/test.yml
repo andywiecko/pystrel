@@ -28,7 +28,7 @@ jobs:
         run: flit install
 
       - name: Run tests
-        run: pytest --cov
+        run: pytest --cov=pystrel
 
       - name: Run pylint
         run: pylint pystrel/ tests/
