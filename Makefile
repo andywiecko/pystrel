@@ -1,7 +1,7 @@
 .PHONY: docs
 
 test:
-	pytest --cov
+	pytest --cov=pystrel
 	mypy
 	pylint pystrel/ tests/
 	black --check .
