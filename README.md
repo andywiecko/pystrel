@@ -8,7 +8,8 @@ Library for *exact* calculations of strongly correlated systems.
 > The API is subject to change without advance notice.
 > It is not recommended for production usage.
 
-[![Pytest](https://github.com/andywiecko/pystrel/actions/workflows/test.yml/badge.svg)](https://github.com/andywiecko/pystrel/actions/workflows/test.yml)
+[![test](https://github.com/andywiecko/pystrel/actions/workflows/test.yml/badge.svg)](https://github.com/andywiecko/pystrel/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/andywiecko/pystrel/branch/main/graph/badge.svg?token=Q9QS5ISW1E)](https://codecov.io/gh/andywiecko/pystrel)
 [![gh-pages](https://img.shields.io/github/deployments/andywiecko/pystrel/github-pages?label=gh-pages)][docs]
 
 The main goal of this package is to provide an easy-to-use interface for performing precise calculations on strongly correlated systems. The package offers the following features:
