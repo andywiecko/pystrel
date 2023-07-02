@@ -32,7 +32,8 @@ We hope this library enhances your research on strongly correlated systems. Happ
 | `t`          | $\sum_{i,j} \left(t_{ij} \, a_i^\dagger a_j + \text{h.c.}\right)$                |
 | `V`          | $\sum_{i,j} V_{ij} \, n_i n_j$                                                   |
 | `Delta`      | $\sum_{i,j} \left(\Delta_{ij} \, a_i^\dagger a_j^\dagger + \text{h.c.}\right)$   |
-| `mu`         | $\sum_{i} \mu_{i} \, n_i$                                                        |
+| `mu`         | $\mu N = \mu \sum_{i} \, n_i$                                                    |
+| `epsilon`    | $\sum_i \epsilon_i \, n_i$                                                       |
 
 ### Spins 1/2
 

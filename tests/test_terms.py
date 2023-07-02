@@ -305,14 +305,28 @@ def test_term_Delta(L: int, P: int):  # pylint: disable=C0103,R0914
     npt.assert_allclose(eig, E, atol=1e-7)
 
 
-def test_term_mu():
+def test_term_epsilon():
     L = 4
     N = 2
     size = int(sps.binom(L, N))
     params = {0: 1.0, 1: 2, 2: 4, 3: 8}
     matrix = np.zeros((size, size))
 
-    matrix = ps.Term_mu.apply(params, matrix, (L, N))
+    matrix = ps.Term_epsilon.apply(params, matrix, (L, N))
     eig = np.linalg.eigvalsh(matrix, "U")
 
     npt.assert_array_equal(eig, [3.0, 5, 6, 9, 10, 12])
+
+
+def test_term_mu():
+    L = 4
+    N = 2
+    size = int(sps.binom(L, N))
+    params = 2.0
+    matrix = np.zeros((size, size))
+    np.fill_diagonal(matrix, np.arange(size))
+
+    matrix = ps.Term_mu.apply(params, matrix, (L, N))
+    eig = np.linalg.eigvalsh(matrix, "U")
+
+    npt.assert_array_equal(eig, [4.0, 5, 6, 7, 8, 9])
