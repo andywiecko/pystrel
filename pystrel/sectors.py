@@ -28,10 +28,14 @@ def generate_sectors(
 
     def max_site(terms):
         return max(
-            id + 1
-            for key in terms
-            for t in terms[key]
-            for id in (t if isinstance(t, tuple) else (t,))
+            (
+                id + 1
+                for key in terms
+                if isinstance(terms[key], dict)
+                for t in terms[key]
+                for id in (t if isinstance(t, tuple) else (t,))
+            ),
+            default=None,
         )
 
     terms = params.get("terms", None)

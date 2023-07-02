@@ -201,19 +201,19 @@ class Term_Delta(Term):
         return matrix
 
 
-class Term_mu(Term):
+class Term_epsilon(Term):
     r"""
-    Implementation of chemical potential like operator μᵢ nᵢ for
+    Implementation of chemical potential like operator εᵢ nᵢ for
     spinless fermions, given by
 
     $$
-    \sum_{i} \mu_{i} \, n_i .
+    \sum_{i} \epsilon_{i} \, n_i .
     $$
     """
-    tag = "mu"
+    tag = "epsilon"
     particle_type = "spinless fermions"
     ensemble = "canonical"
-    repr = "∑ᵢ μᵢ nᵢ"
+    repr = "∑ᵢ εᵢ nᵢ"
     mixing_rank = 0
 
     @staticmethod
@@ -223,6 +223,27 @@ class Term_mu(Term):
             for i, mu in params.items():
                 if s[i] == "1":
                     matrix[x, x] += mu
+        return matrix
+
+
+class Term_mu(Term):
+    r"""
+    Implementation of chemical potential operator μ N for
+    spinless fermions, given by
+
+    $$
+    \mu N = \mu \sum_{i} \, n_i .
+    $$
+    """
+    tag = "mu"
+    particle_type = "spinless fermions"
+    ensemble = "canonical"
+    repr = "μ ∑ᵢ nᵢ"
+    mixing_rank = 0
+
+    @staticmethod
+    def apply(params, matrix, sector):
+        np.fill_diagonal(matrix, matrix.diagonal() + params * sector[1])
         return matrix
 
 
