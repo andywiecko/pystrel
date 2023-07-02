@@ -6,6 +6,7 @@ import pystrel.sectors as ps
     "ensemble, params, expected",
     [
         ("undefined", {}, []),
+        ("undefined", {"sites": 1}, []),
         ("canonical", {}, []),
         ("canonical", {"sites": 6}, [(6, 3)]),
         ("canonical", {"sites": 7}, [(7, 3)]),
