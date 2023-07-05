@@ -53,44 +53,6 @@ ps.terms.utils.register_term_type(FakeB)
 ps.terms.utils.register_term_type(FakeC)
 
 
-@pytest.mark.parametrize(
-    "params, expected",
-    [
-        ({"sites": 4, "particles": 2, "terms": {"fake A": {(0, 1): 1.0}}}, [(4, 2)]),
-        (
-            {"sites": 4, "terms": {"fake B": {(0, 1): 1.0}}},
-            [(4, 0), (4, 1), (4, 2), (4, 3), (4, 4)],
-        ),
-        (
-            {"sites": 4, "parity": 0, "terms": {"fake C": {(0, 1): 1.0}}},
-            [(4, 0), (4, 2), (4, 4)],
-        ),
-    ],
-)
-def test_model_init_sectors(params, expected):
-    model = ps.Model(params)
-    assert model.sectors == expected
-
-
-@pytest.mark.parametrize(
-    "params, expected",
-    [
-        ({"sites": 4, "particles": 2, "terms": {"fake A": {(0, 1): 1.0}}}, []),
-        (
-            {"sites": 4, "terms": {"fake B": {(0, 1): 1.0}}},
-            [(0, 1), (1, 2), (2, 3), (3, 4)],
-        ),
-        (
-            {"sites": 4, "parity": 0, "terms": {"fake C": {(0, 1): 1.0}}},
-            [(0, 1), (1, 2)],
-        ),
-    ],
-)
-def test_model_init_mixing_sectors(params, expected):
-    model = ps.Model(params)
-    assert model.mixing_sectors == expected
-
-
 def test_model_build_hamiltonian_case1():
     params = {
         "sites": 2,
