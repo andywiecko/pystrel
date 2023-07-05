@@ -15,7 +15,6 @@ import typing
 import numpy as np
 import numpy.typing as npt
 import scipy.sparse as nps  # type: ignore
-import scipy.special as sps  # type: ignore
 
 try:
     import cupy as cp  # type: ignore
@@ -52,31 +51,7 @@ class Model:
         """
         self.params: dict[str, typing.Any] = params
         self.terms: dict[str, dict] = params.get("terms", {})
-
-        self.__sector_offset: list[int] = []
-        self.__sector_size: list[int] = []
-        self.__size = 0
-        self.sectors: list[tuple[int, int]] = []
-        ensemble = terms.utils.identify_ensemble(self.terms)
-        self.sectors = params.get(
-            "sectors", sectors.generate_sectors(ensemble, self.params)
-        )
-
-        ranks = terms.utils.collect_mixing_sector_ranks(self.terms)
-        self.mixing_sectors: list[tuple[int, int]] = sectors.generate_mixing_sectors(
-            ranks, self.sectors
-        )
-
-        self.__init_sectors()
-
-    def __init_sectors(self):
-        offset = 0
-        for L, N in self.sectors:
-            size = int(sps.binom(L, N))
-            self.__sector_size.append(size)
-            self.__sector_offset.append(offset)
-            offset += size
-            self.__size += size
+        self.sectors = sectors.Sectors(params)
 
     def build_hamiltonian(
         self,
@@ -114,7 +89,7 @@ class Model:
         if device not in ["gpu", "cpu"]:
             raise ValueError()
 
-        shape = (self.__size, self.__size)
+        shape = (self.sectors.size, self.sectors.size)
         match sparsity:
             case "dense":
                 matrix = np.zeros(shape, dtype=dtype)
@@ -142,9 +117,7 @@ class Model:
                 raise ValueError()
 
     def __build_local_sectors(self, matrix: np.ndarray | nps.dok_matrix):
-        for i, sector in enumerate(self.sectors):
-            start = self.__sector_offset[i]
-            end = start + self.__sector_size[i]
+        for start, end, sector in self.sectors:
             matrix[start:end, start:end] = terms.utils.apply(
                 terms=self.terms,
                 matrix=matrix[start:end, start:end],
@@ -153,16 +126,16 @@ class Model:
             )
 
     def __build_mixing_sectors(self, matrix: np.ndarray | nps.dok_matrix):
-        for id0, id1 in self.mixing_sectors:
-            start0 = self.__sector_offset[id0]
-            start1 = self.__sector_offset[id1]
-            end0 = start0 + self.__sector_size[id0]
-            end1 = start1 + self.__sector_size[id1]
+        for (start0, end0, sector0), (
+            start1,
+            end1,
+            sector1,
+        ) in self.sectors.mixing_iter():
             matrix[start0:end0, start1:end1] = terms.utils.apply(
                 terms=self.terms,
                 matrix=matrix[start0:end0, start1:end1],
-                sector=self.sectors[id0],
-                rank=self.sectors[id1][1] - self.sectors[id0][1],
+                sector=sector0,
+                rank=sector1[1] - sector0[1],
             )
 
     def __str__(self):
@@ -172,7 +145,7 @@ class Model:
             "# Model: Ĥ = "
             + " +\n#            ".join(terms.utils.term__str__(t) for t in self.terms)
             + "\n"
-            f"# Space size: {self.__size} × {self.__size}\n"
+            f"# Space size: {self.sectors.size} × {self.sectors.size}\n"
             f"# Ensemble: {terms.utils.identify_ensemble(self.terms)}\n"
             f"# Sectors: {self.sectors}\n"
             "# Terms:\n"

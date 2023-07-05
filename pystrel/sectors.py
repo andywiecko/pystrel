@@ -1,7 +1,119 @@
 """
-Module contains utility functions related to `Model`'s particle sectors.
+Module contains utilities related to `Model`'s particle sectors.
 """
 import typing
+import scipy.special as sps  # type: ignore
+from . import terms
+
+
+class Sectors:
+    """
+    Helper class used for representing the sectors of the Hilbert space.
+
+    Example
+    -------
+    `Sectors` allows for iteration and easy access to related matrix elements.
+
+    >>> sectors = Sectors({"terms": { ... }})
+    >>> for start, end, sector in sectors:
+    >>>     matrix[start:end, start:end] = ...
+
+    It can be used for mixing sectors iterations as well
+
+    >>> sectors = Sectors({"terms":{ ... }})
+    >>> for (x0, y0, s0), (x1, y1, s1) in sectors.mixing_iter():
+    >>>      matrix[x0:y0, x1:y1] = ...
+    """
+
+    def __init__(self, params: dict):
+        """
+        `Sectors` constructor.
+
+        Parameters
+        ----------
+        params : dict
+            Dictionary of parameters. Can include keys like:
+            - `terms`
+            - `particles`
+            - `sites`
+            - `sectors`
+
+            See `pystrel.model` documentation for more details.
+        """
+        self.sectors: list[tuple[int, int]] = params.get(
+            "sectors",
+            generate_sectors(
+                terms.utils.identify_ensemble(params.get("terms", {})), params
+            ),
+        )
+        """
+        List of sectors in the form of tuples `(L, N)`, where `L` and `N`
+        correspond to sites and particles, respectively.
+        """
+
+        self.mixing_sectors: list[tuple[int, int]] = generate_mixing_sectors(
+            terms.utils.collect_mixing_sector_ranks(params.get("terms", {})),
+            self.sectors,
+        )
+        """List of tuples representing mixing sector IDs."""
+
+        self.size: int = 0
+        """Size of the Hilbert space corresponding to `Sectors.sectors`."""
+        self.starts: list[int] = []
+        """List of start indices corresponding to the `Sectors.sectors`."""
+        self.ends: list[int] = []
+        """List of end indices corresponding to the `Sectors.sectors`."""
+
+        offset = 0
+        for L, N in self.sectors:
+            size = int(sps.binom(L, N))
+            self.size += size
+            self.starts.append(offset)
+            self.ends.append(offset + size)
+            offset += size
+
+    def __iter__(self):
+        return zip(self.starts, self.ends, self.sectors)
+
+    def __str__(self):
+        return str(self.sectors)
+
+    def mixing_iter(self):
+        """
+        Iterator for mixing sectors, enabling convenient access to matrix elements.
+
+        Example
+        -------
+        >>> sectors = Sectors({"terms": { ... }})
+        >>> for (s0, e0, sector0), (s1, e1, sector1) in sectors.mixing_iter():
+        >>>     ... = matrix[s0:e0, s1:e1]
+        >>>     ...
+
+        Returns
+        -------
+        _MixingSectorIterator
+            Iterator for mixing sectors.
+        """
+        return _MixingSectorIterator(self)
+
+
+# pylint: disable=R0903
+class _MixingSectorIterator:
+    def __init__(self, sectors: Sectors):
+        self.sectors = sectors
+
+    def __iter__(self):
+        s = self.sectors
+        return iter(
+            (
+                (s.starts[s0], s.ends[s0], s.sectors[s0]),
+                (s.starts[s1], s.ends[s1], s.sectors[s1]),
+            )
+            for s0, s1 in s.mixing_sectors
+        )
+
+
+# pylint: enable=R0903
 
 
 def generate_sectors(
@@ -26,20 +138,20 @@ def generate_sectors(
         Sectors list with made of tuples `(sites, particles)`.
     """
 
-    def max_site(terms):
+    def max_site(_terms):
         return max(
             (
                 id + 1
-                for key in terms
-                if isinstance(terms[key], dict)
-                for t in terms[key]
+                for key in _terms
+                if isinstance(_terms[key], dict)
+                for t in _terms[key]
                 for id in (t if isinstance(t, tuple) else (t,))
             ),
             default=None,
         )
 
-    terms = params.get("terms", None)
-    L = params.get("sites", max_site(terms) if terms is not None else None)
+    _terms = params.get("terms", None)
+    L = params.get("sites", max_site(_terms) if _terms is not None else None)
     if L is None:
         return []
 
