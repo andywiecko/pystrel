@@ -2,6 +2,7 @@
 All `pystrel.terms.term.Term` implementations.
 """
 import numpy as np
+import scipy.sparse as nps  # type: ignore
 from .. import combinadics
 from .term import Term
 
@@ -243,7 +244,13 @@ class Term_mu(Term):
 
     @staticmethod
     def apply(params, matrix, sector):
-        np.fill_diagonal(matrix, matrix.diagonal() + params * sector[1])
+        if isinstance(matrix, np.ndarray):
+            np.fill_diagonal(matrix, matrix.diagonal() + params * sector[1])
+
+        elif isinstance(matrix, nps.dok_array):
+            diagonal = range(matrix.shape[0])
+            matrix[diagonal, diagonal] += params * sector[1]
+
         return matrix
 
 
