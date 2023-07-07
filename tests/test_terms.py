@@ -6,9 +6,9 @@ We could introduce abstraction for the combinadics, however, this is not worth t
 import pytest
 import numpy as np
 import numpy.testing as npt
+import scipy.sparse as nps  # type: ignore
 import scipy.special as sps  # type: ignore
 import pystrel.terms as ps
-
 
 # pylint: disable=R0903,C0115,R0801
 
@@ -328,5 +328,19 @@ def test_term_mu():
 
     matrix = ps.Term_mu.apply(params, matrix, (L, N))
     eig = np.linalg.eigvalsh(matrix, "U")
+
+    npt.assert_array_equal(eig, [4.0, 5, 6, 7, 8, 9])
+
+
+def test_term_mu_sparse():
+    L = 4
+    N = 2
+    size = int(sps.binom(L, N))
+    params = 2.0
+    matrix = nps.dok_array((size, size))
+    matrix.setdiag(np.arange(size))
+
+    matrix = ps.Term_mu.apply(params, matrix, (L, N))
+    eig = np.linalg.eigvalsh(matrix.toarray(), "U")
 
     npt.assert_array_equal(eig, [4.0, 5, 6, 7, 8, 9])
