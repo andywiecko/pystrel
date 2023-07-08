@@ -126,10 +126,10 @@ def collect_mixing_sector_ranks(terms: dict[str, dict]) -> set[int]:
 
 def apply(
     terms: dict[str, dict],
-    matrix: np.ndarray | nps.dok_matrix,
+    matrix: np.ndarray | nps.dok_array,
     sector: tuple[int, int],
     rank: int,
-) -> np.ndarray | nps.dok_matrix:
+) -> np.ndarray | nps.dok_array:
     """
     Applies all `terms` of given `rank` on `matrix` within given `sector`.
 
@@ -146,7 +146,7 @@ def apply(
 
     Returns
     -------
-    np.ndarray | nps.dok_matrix
+    np.ndarray | nps.dok_array
         Matrix with applied terms.
     """
     for t, params in terms.items():
