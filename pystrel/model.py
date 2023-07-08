@@ -58,7 +58,7 @@ class Model:
         device: typing.Literal["cpu", "gpu"] = "cpu",
         sparsity: typing.Literal["sparse", "dense"] = "dense",
         dtype: npt.DTypeLike = None,
-    ) -> np.ndarray | nps.csr_matrix | typing.Any:
+    ) -> np.ndarray | nps.csr_array | typing.Any:
         """
         Constructs hamiltonian on the selected `device` and matrix `sparsity` type.
 
@@ -74,7 +74,7 @@ class Model:
 
         Returns
         -------
-        np.ndarray | nps.csr_matrix | Any
+        np.ndarray | nps.csr_array | Any
             Hamiltonian matrix representation.
 
         Raises
@@ -103,10 +103,10 @@ class Model:
                 raise ValueError()
 
             case "sparse":
-                matrix = nps.dok_matrix(shape, dtype=dtype)
+                matrix = nps.dok_array(shape, dtype=dtype)
                 self.__build_local_sectors(matrix)
                 self.__build_mixing_sectors(matrix)
-                matrix = nps.csr_matrix(matrix + nps.triu(matrix, 1).H)
+                matrix = nps.csr_array(matrix + nps.triu(matrix, 1).H)
                 if device == "cpu":
                     return matrix
                 if device == "gpu":
@@ -116,7 +116,7 @@ class Model:
             case _:
                 raise ValueError()
 
-    def __build_local_sectors(self, matrix: np.ndarray | nps.dok_matrix):
+    def __build_local_sectors(self, matrix: np.ndarray | nps.dok_array):
         for start, end, sector in self.sectors:
             matrix[start:end, start:end] = terms.utils.apply(
                 terms=self.terms,
@@ -125,7 +125,7 @@ class Model:
                 rank=0,
             )
 
-    def __build_mixing_sectors(self, matrix: np.ndarray | nps.dok_matrix):
+    def __build_mixing_sectors(self, matrix: np.ndarray | nps.dok_array):
         for (start0, end0, sector0), (
             start1,
             end1,
