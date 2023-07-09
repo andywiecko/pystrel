@@ -23,14 +23,15 @@ except ImportError:
     cp = None
     cps = None
 
-from . import terms
 from . import sectors
+from .terms import utils as terms_utils
+from .operators import utils as operators_utils
 
 
 class Model:
     """
     Basic class used for representing the system.
-    It is used for constructing hamiltonian as well as operators
+    It is used for constructing Hamiltonian as well as operators
     in the given Hilbert space.
     """
 
@@ -60,7 +61,7 @@ class Model:
         dtype: npt.DTypeLike = None,
     ) -> np.ndarray | nps.csr_array | typing.Any:
         """
-        Constructs hamiltonian on the selected `device` and matrix `sparsity` type.
+        Constructs Hamiltonian on the selected `device` and matrix `sparsity` type.
 
         Parameters
         ----------
@@ -76,6 +77,38 @@ class Model:
         -------
         np.ndarray | nps.csr_array | Any
             Hamiltonian matrix representation.
+        """
+        return self.build_operator("H", device, sparsity, dtype)
+
+    def build_operator(
+        self,
+        tag: str,
+        device: typing.Literal["cpu", "gpu"] = "cpu",
+        sparsity: typing.Literal["sparse", "dense"] = "dense",
+        dtype: npt.DTypeLike = None,
+        **kwargs,
+    ) -> np.ndarray | nps.csr_array | typing.Any:
+        """
+        Constructs operator of given `tag` on the selected `device` and matrix `sparsity` type.
+
+        Parameters
+        ----------
+        tag : str
+            Tag of selected operator. See `pystrel.operators` to see available operators.
+        device : typing.Literal["cpu", "gpu"], optional
+            Device on which hamiltonian should be constructed, by default "cpu".
+        sparsity : typing.Literal["sparse", "dense"], optional
+            Matrix sparsity type which is used, by default "dense".
+            If "sparse" is selected, returns matrix in CSR format.
+        dtype : npt.DTypeLike, optional
+            Any object that can be interpreted as a numpy data type.
+        **kwargs : dict, optional
+            Additional operators arguments, see `pystrel.operators` for more details.
+
+        Returns
+        -------
+        np.ndarray | nps.csr_array | typing.Any
+            Operator matrix representation
 
         Raises
         ------
@@ -89,64 +122,34 @@ class Model:
         if device not in ["gpu", "cpu"]:
             raise ValueError()
 
-        shape = (self.sectors.size, self.sectors.size)
-        match sparsity:
-            case "dense":
-                matrix = np.zeros(shape, dtype=dtype)
-                self.__build_local_sectors(matrix)
-                self.__build_mixing_sectors(matrix)
-                matrix = matrix + np.conjugate(np.triu(matrix, 1)).T
-                if device == "cpu":
-                    return matrix
-                if device == "gpu":
-                    return cp.array(matrix)
-                raise ValueError()
+        matrix = operators_utils.build(
+            tag,
+            sectors=self.sectors,
+            terms=self.terms,
+            sparsity=sparsity,
+            dtype=dtype,
+            **kwargs,
+        )
 
-            case "sparse":
-                matrix = nps.dok_array(shape, dtype=dtype)
-                self.__build_local_sectors(matrix)
-                self.__build_mixing_sectors(matrix)
-                matrix = nps.csr_array(matrix + nps.triu(matrix, 1).H)
-                if device == "cpu":
-                    return matrix
-                if device == "gpu":
-                    return cps.csr_matrix(matrix)
-                raise ValueError()
+        match (device, sparsity):
+            case ("gpu", "dense"):
+                return cp.array(matrix)
+
+            case ("gpu", "sparse"):
+                return cps.csr_matrix(matrix)
 
             case _:
-                raise ValueError()
-
-    def __build_local_sectors(self, matrix: np.ndarray | nps.dok_array):
-        for start, end, sector in self.sectors:
-            matrix[start:end, start:end] = terms.utils.apply(
-                terms=self.terms,
-                matrix=matrix[start:end, start:end],
-                sector=sector,
-                rank=0,
-            )
-
-    def __build_mixing_sectors(self, matrix: np.ndarray | nps.dok_array):
-        for (start0, end0, sector0), (
-            start1,
-            end1,
-            sector1,
-        ) in self.sectors.mixing_iter():
-            matrix[start0:end0, start1:end1] = terms.utils.apply(
-                terms=self.terms,
-                matrix=matrix[start0:end0, start1:end1],
-                sector=sector0,
-                rank=sector1[1] - sector0[1],
-            )
+                return matrix
 
     def __str__(self):
         return (
             "# " + 16 * "#" + " Info " + 16 * "#" + "\n"
-            f"# Particle type: {terms.utils.identify_particle_type(self.terms)}\n"
+            f"# Particle type: {terms_utils.identify_particle_type(self.terms)}\n"
             "# Model: Ĥ = "
-            + " +\n#            ".join(terms.utils.term__str__(t) for t in self.terms)
+            + " +\n#            ".join(terms_utils.term__str__(t) for t in self.terms)
             + "\n"
             f"# Space size: {self.sectors.size} × {self.sectors.size}\n"
-            f"# Ensemble: {terms.utils.identify_ensemble(self.terms)}\n"
+            f"# Ensemble: {terms_utils.identify_ensemble(self.terms)}\n"
             f"# Sectors: {self.sectors}\n"
             "# Terms:\n"
             + "\n".join("# - " + i + ": " + str(j) for i, j in self.terms.items())
