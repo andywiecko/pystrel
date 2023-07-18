@@ -113,3 +113,17 @@ def test_model_dtype(dtype, sparsity):
     m = ps.Model({})
     h = m.build_hamiltonian(sparsity=sparsity, dtype=dtype)
     assert h.dtype == dtype
+
+
+def test_model_update_terms():
+    params = {"terms": {"t": {(0, 1): 1.0}, "Delta": {(0, 1): 2.0}}}
+    model = ps.Model(params)
+    model.update_terms({"t": {(0, 1): 2.0, (1, 2): 2.0}})
+    assert model.terms == {"t": {(0, 1): 2.0, (1, 2): 2.0}, "Delta": {(0, 1): 2.0}}
+
+
+def test_model_update_terms_exception():
+    with pytest.raises(ValueError):
+        params = {"terms": {"t": {(0, 1): 1.0}}}
+        model = ps.Model(params)
+        model.update_terms({"t": {(0, 1): 2.0, (1, 2): 2.0}, "Delta": {(0, 1): 2.0}})
