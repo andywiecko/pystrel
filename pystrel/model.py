@@ -54,6 +54,44 @@ class Model:
         self.terms: dict[str, dict] = params.get("terms", {})
         self.sectors = sectors.Sectors(params)
 
+    def update_terms(self, terms: dict):
+        """
+        Update the `terms` for the model.
+
+        Parameters
+        ----------
+        terms : dict
+            Dictionary with terms to update.
+
+        Examples
+        --------
+        This method allows for updating the values of existing terms or adding new terms.
+        Terms updates is based on dictionary `|=` operator behavior
+
+        >>> import pystrel as ps
+        >>> params = { "terms": {"t": {(0, 1): 1.0 }, "Delta": {(1, 2): 2.0} } }
+        >>> model = ps.Model(params)
+        >>> model.update_terms({"t": {(0, 1): 2.0, (1, 2): 2.0}})
+        >>> # The model now has t(0, 1) = t(1, 2) = 2.0 and Delta(1, 2) = 2.0
+
+        Raises
+        ------
+        ValueError
+            If the provided `terms` contain keys that were not present during initialization.
+            This restriction is in place for safety reasons.
+            Consider creating a new `Model` instance
+            or adding new terms with 'zero value' during initialization.
+        """
+        if self.terms.keys() != (self.terms | terms).keys():
+            raise ValueError(
+                "The provided `terms` contains keys that were not present during initialization! "
+                "This restriction is in place for safety reasons. "
+                "Consider creating a new `Model` instance "
+                "or adding new terms with 'zero value' during initialization."
+            )
+
+        self.terms |= terms
+
     def build_hamiltonian(
         self,
         device: typing.Literal["cpu", "gpu"] = "cpu",
