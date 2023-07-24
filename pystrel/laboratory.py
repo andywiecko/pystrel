@@ -29,3 +29,28 @@ def measure(
         Operator measurement.
     """
     return np.conj(state) @ operator @ state
+
+
+def project(
+    phi: np.ndarray | typing.Any, psi: np.ndarray | typing.Any
+) -> np.float64 | typing.Any:
+    r"""
+    Returns $|\phi\rangle$ and $|\psi\rangle$ projection:
+
+    $$
+        p = |\langle\phi|\psi\rangle|^2.
+    $$
+
+    Parameters
+    ----------
+    phi : np.ndarray | typing.Any
+        State $|\phi\rangle$.
+    psi : np.ndarray | typing.Any
+        State $|\psi\rangle$.
+
+    Returns
+    -------
+    np.float64 | typing.Any
+        $|\langle\phi|\psi\rangle|^2$
+    """
+    return np.abs(np.dot(np.conj(phi), psi)) ** 2
