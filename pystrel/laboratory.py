@@ -5,6 +5,11 @@ import typing
 import numpy as np
 import scipy.sparse as nps  # type: ignore
 
+try:
+    import cupy as cp  # type: ignore
+except ImportError:
+    cp = None
+
 
 def measure(
     operator: np.ndarray | nps.csr_array | typing.Any, state: np.ndarray
@@ -28,7 +33,7 @@ def measure(
     np.float64
         Operator measurement.
     """
-    return np.conj(state) @ operator @ state
+    return state.conj() @ operator @ state
 
 
 def project(
@@ -53,4 +58,5 @@ def project(
     np.float64 | typing.Any
         $|\langle\phi|\psi\rangle|^2$
     """
-    return np.abs(np.dot(np.conj(phi), psi)) ** 2
+    xp = np if cp is None else cp.get_array_module(phi)
+    return xp.abs(xp.dot(phi.conj(), psi)) ** 2
