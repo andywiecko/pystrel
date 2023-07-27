@@ -2,7 +2,7 @@
 
 Library for *exact* calculations of strongly correlated systems.
 
-> **Warning**
+> [!Warning]
 >
 > This package is currently in a preview state.
 > The API is subject to change without advance notice.
@@ -71,16 +71,16 @@ import numpy as np
 import pystrel as ps
 
 L = 10
-model = ps.Model({
+params = {
     "sites": L,
     "terms": {
         'Jz': {(i, (i+1) % L): 1.0 for i in range(L)},
         'hz': {i: (-1.0)**i for i in range(L)},
     },
-})
-
+}
+model = ps.Model(params)
 h = model.build_hamiltonian(device='cpu', sparsity='dense')
-v, w = np.linalg.eigh(h)
+e, v = ps.spectrum.get_full_spectrum(h)
 ```
 
 ## Upcoming features
@@ -90,10 +90,10 @@ List of the tasks to consider before the first release:
 - [ ] topology utils
 - [ ] state class
 - [ ] additional terms: 3dim (tJ like), 4 dim (Hubbard like)
-- [ ] quantum dynamics: RK4, chebyshev
-- [ ] energy calculation: ground state, full spectrum
+- [ ] quantum dynamics: ~~RK4~~, chebyshev
+- [X] ~~energy calculation: ground state, full spectrum~~
 - [ ] LIOMs
-- [ ] operators
+- [ ] operators: ~~spinless fermions~~, spins
 - [ ] parameters json/yaml load
 - [ ] example notebooks
 - [ ] benchmarks
