@@ -6,7 +6,7 @@ import pystrel as ps
 
 @pytest.mark.parametrize("a", [0.1, 1.0, 2.0])
 @pytest.mark.parametrize("b", [0.5, 1.0, 2.5])
-@pytest.mark.parametrize("method", ["rk4"])
+@pytest.mark.parametrize("method", ["rk4", "cheb"])
 def test_time_independent_hamiltonian_rabi_oscilations(a: float, b: float, method):
     r"""
     Rabi oscillations example
@@ -52,7 +52,7 @@ def test_time_independent_hamiltonian_rabi_oscilations(a: float, b: float, metho
 
 @pytest.mark.parametrize("a", [2.0, 1.1, 0.33])
 @pytest.mark.parametrize("b", [1.0, 0.1, 3.5])
-@pytest.mark.parametrize("method", ["rk4"])
+@pytest.mark.parametrize("method", ["rk4", "cheb"])
 def test_time_dependent_hamiltonian_landau_zener_transition(a: float, b: float, method):
     r"""
     Landau-Zener transition example

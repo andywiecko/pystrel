@@ -2,7 +2,7 @@
 
 Library for *exact* calculations of strongly correlated systems.
 
-> [!Warning]
+> [!WARNING]
 >
 > This package is currently in a preview state.
 > The API is subject to change without advance notice.
@@ -90,7 +90,7 @@ List of the tasks to consider before the first release:
 - [ ] topology utils
 - [ ] state class
 - [ ] additional terms: 3dim (tJ like), 4 dim (Hubbard like)
-- [ ] quantum dynamics: ~~RK4~~, chebyshev
+- [X] ~~quantum dynamics: RK4, chebyshev~~
 - [X] ~~energy calculation: ground state, full spectrum~~
 - [ ] LIOMs
 - [ ] operators: ~~spinless fermions~~, spins
