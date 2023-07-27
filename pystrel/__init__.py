@@ -1,4 +1,6 @@
-"""TODO"""
+"""
+    .. include:: ../README.md
+"""
 from .model import Model
 from . import combinadics
 from . import terms
