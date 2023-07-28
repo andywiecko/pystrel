@@ -4,6 +4,7 @@ Module contains utilities related to `Model`'s particle sectors.
 import typing
 import scipy.special as sps  # type: ignore
 from . import terms
+from .parameters import Parameters
 
 
 class Sectors:
@@ -25,20 +26,15 @@ class Sectors:
     >>>      matrix[x0:y0, x1:y1] = ...
     """
 
-    def __init__(self, params: dict):
+    def __init__(self, params: Parameters):
         """
         `Sectors` constructor.
 
         Parameters
         ----------
-        params : dict
-            Dictionary of parameters. Can include keys like:
-            - `terms`
-            - `particles`
-            - `sites`
-            - `sectors`
-
-            See `pystrel.model` documentation for more details.
+        params : Parameters
+            Dictionary of parameters.
+            See `pystrel.parameters.Parameters` for more details.
         """
         self.sectors: list[tuple[int, int]] = params.get(
             "sectors",
@@ -120,7 +116,7 @@ def generate_sectors(
     ensemble: typing.Literal[
         "grand canonical", "parity grand canonical", "canonical", "undefined"
     ],
-    params: dict,
+    params: Parameters,
 ) -> list[tuple[int, int]]:
     """
     Generates sectors for the corresponding `ensemble` with given `params`.
@@ -129,8 +125,9 @@ def generate_sectors(
     ----------
     ensemble : typing.Literal["grand canonical", "parity grand canonical", "canonical", "undefined"]
         Ensemble string.
-    params : dict
-        Supports same parameters as `Model`.
+    params : Parameters
+        Dictionary of parameters.
+        See `pystrel.parameters.Parameters` for more details.
 
     Returns
     -------
