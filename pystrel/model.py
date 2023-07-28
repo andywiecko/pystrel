@@ -1,15 +1,6 @@
 """
-
-Supported keys for `Model` `params`:
-
-| key         | values                  | Description                                      |
-| ----------- | ----------------------- | ------------------------------------------------ |
-| `terms`     | `dict[str, dict]`       | To see supported terms see `terms.py`            |
-| `sites`     | `int`                   | number of sites                                  |
-| `particles` | `int`                   | number of particles                              |
-| `parity`    | `Literal[0, 1]`         | parity sector in parity grand canonical ensemble |
-| `sectors`   | `list[tuple[int, int]]` | custom particle sectors                          |
-
+Base `Model` class for creating Hamiltonians, operators, etc.
+See `pystrel.parameters.Parameters` to see configuration options.
 """
 import typing
 import numpy as np
@@ -26,6 +17,7 @@ except ImportError:
 from . import sectors
 from .terms import utils as terms_utils
 from .operators import utils as operators_utils
+from .parameters import Parameters
 
 
 class Model:
@@ -35,22 +27,17 @@ class Model:
     in the given Hilbert space.
     """
 
-    def __init__(self, params: dict):
+    def __init__(self, params: Parameters):
         """
         Constructs `Model` using the given `params`.
 
         Parameters
         ----------
-        params : dict
-            Dictionary of parameters. Can include keys like:
-            - `terms`
-            - `particles`
-            - `sites`
-            - `sectors`
-
-            See module documentation for more details.
+        params : Parameters
+            Dictionary of parameters.
+            See `pystrel.parameters.Parameters` for more details.
         """
-        self.params: dict[str, typing.Any] = params
+        self.params: Parameters = params
         self.terms: dict[str, dict] = params.get("terms", {})
         self.sectors = sectors.Sectors(params)
 
