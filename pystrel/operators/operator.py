@@ -7,6 +7,7 @@ import numpy.typing as npt
 import numpy as np
 import scipy.sparse as nps  # type: ignore
 from ..sectors import Sectors
+from ..terms.typing import Terms
 
 
 class Operator:  # pylint: disable=R0903
@@ -19,7 +20,7 @@ class Operator:  # pylint: disable=R0903
     @staticmethod  # pylint: disable=W0613
     def build(
         sectors: Sectors,
-        terms: dict,
+        terms: Terms,
         sparsity: typing.Literal["sparse", "dense"] = "dense",
         dtype: npt.DTypeLike = None,
         **kwargs,
@@ -31,8 +32,9 @@ class Operator:  # pylint: disable=R0903
         ----------
         sectors : Sectors
             Sectors in which operator should be constructed.
-        terms : dict
-            Terms of the model in which operator should be constructed.
+        terms : Terms
+            Dictionary with terms.
+            See `pystrel.terms` for more details.
         sparsity : typing.Literal["sparse", "dense"], optional
             Matrix sparsity type which is used, by default "dense".
             If "sparse" is selected, returns matrix in CSR format.

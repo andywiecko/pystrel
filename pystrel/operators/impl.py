@@ -7,6 +7,7 @@ import numpy as np
 import scipy.sparse as nps  # type: ignore
 
 from ..sectors import Sectors
+from ..terms.typing import Terms
 from .operator import Operator
 from .hermitian_operator import HermitianOperator
 
@@ -28,7 +29,7 @@ class Operator_H(Operator):
     @staticmethod
     def build(
         sectors: Sectors,
-        terms: dict,
+        terms: Terms,
         sparsity: typing.Literal["sparse", "dense"] = "dense",
         dtype: npt.DTypeLike = None,
         **kwargs,
@@ -51,7 +52,7 @@ class Operator_N(Operator):
     @staticmethod
     def build(
         sectors: Sectors,
-        terms: dict,
+        terms: Terms,
         sparsity: typing.Literal["sparse", "dense"] = "dense",
         dtype: npt.DTypeLike = None,
         **kwargs,
@@ -81,7 +82,7 @@ class Operator_n(Operator):
     @staticmethod
     def build(
         sectors: Sectors,
-        terms: dict,
+        terms: Terms,
         sparsity: typing.Literal["sparse", "dense"] = "dense",
         dtype: npt.DTypeLike = None,
         **kwargs,

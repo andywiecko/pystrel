@@ -9,6 +9,7 @@ import numpy.typing as npt
 import scipy.sparse as nps  # type: ignore
 from . import impl
 from .operator import Operator
+from ..terms.typing import Terms
 from ..sectors import Sectors
 
 __tag_to_operator: dict[str, typing.Type[Operator]] = {}
@@ -17,7 +18,7 @@ __tag_to_operator: dict[str, typing.Type[Operator]] = {}
 def build(
     tag: str,
     sectors: Sectors,
-    terms: dict,
+    terms: Terms,
     sparsity: typing.Literal["dense", "sparse"],
     dtype: npt.DTypeLike,
     **kwargs,
@@ -31,8 +32,9 @@ def build(
         Corresponding `tag` for operator to create.
     sectors : Sectors
         Sectors in which operator should be constructed.
-    terms : dict
-        Terms of the model in which operator should be constructed.
+    terms : Terms
+        Dictionary with terms.
+        See `pystrel.terms` for more details.
     sparsity : typing.Literal["sparse", "dense"]
         Matrix sparsity type which is used, by default "dense".
         If "sparse" is selected, returns matrix in CSR format.

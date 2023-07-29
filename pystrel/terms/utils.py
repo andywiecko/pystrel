@@ -8,6 +8,7 @@ import numpy as np
 import scipy.sparse as nps  # type: ignore
 from .term import Term
 from . import impl
+from .typing import Terms
 
 __tag_to_term: dict[str, typing.Type[Term]] = {}
 
@@ -74,7 +75,7 @@ def identify_particle_type(
 
 
 def identify_ensemble(
-    terms: dict[str, dict]
+    terms: Terms,
 ) -> typing.Literal[
     "grand canonical", "parity grand canonical", "canonical", "undefined"
 ]:
@@ -83,8 +84,9 @@ def identify_ensemble(
 
     Parameters
     ----------
-    terms : dict[str, dict]
-        Dictionary of terms tags with corresponding parameters.
+    terms : Terms
+        Dictionary with terms.
+        See `pystrel.terms` for more details.
 
     Returns
     -------
@@ -100,14 +102,15 @@ def identify_ensemble(
     return "undefined"
 
 
-def collect_mixing_sector_ranks(terms: dict[str, dict]) -> set[int]:
+def collect_mixing_sector_ranks(terms: Terms) -> set[int]:
     """
     Collects non-zero mixing sector ranks for given `terms`.
 
     Parameters
     ----------
-    terms : dict[str, dict]
-        Dictionary of terms tags with corresponding parameters.
+    terms : Terms
+        Dictionary with terms.
+        See `pystrel.terms` for more details.
 
     Returns
     -------
@@ -125,7 +128,7 @@ def collect_mixing_sector_ranks(terms: dict[str, dict]) -> set[int]:
 
 
 def apply(
-    terms: dict[str, dict],
+    terms: Terms,
     matrix: np.ndarray | nps.dok_array,
     sector: tuple[int, int],
     rank: int,
@@ -135,8 +138,9 @@ def apply(
 
     Parameters
     ----------
-    terms : dict[str, dict]
-        Dictionary of terms tags with corresponding parameters.
+    terms : Terms
+        Dictionary with terms.
+        See `pystrel.terms` for more details.
     matrix : _type_
         View on matrix on which terms should be applied.
     sector : tuple[int, int]
