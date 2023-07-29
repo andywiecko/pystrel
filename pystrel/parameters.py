@@ -1,7 +1,8 @@
 """
-Type hints class for `pystrel.model.Model`'s parameter.
+Type hints class for `pystrel.model.Model`'s parameters.
 """
 import typing
+from .terms.typing import Terms
 
 
 class Parameters(typing.TypedDict):
@@ -9,9 +10,10 @@ class Parameters(typing.TypedDict):
     `TypedDict` for `pystrel.model.Model`'s parameters representation.
     """
 
-    terms: dict
+    terms: Terms
     """
-    To see supported terms see `pystrel.terms`
+    Dictionary with terms.
+    See `pystrel.terms` for more details.
     """
     sites: typing.NotRequired[int]
     """

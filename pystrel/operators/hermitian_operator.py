@@ -8,6 +8,7 @@ import scipy.sparse as nps  # type: ignore
 
 from ..sectors import Sectors
 from ..terms import utils as terms_utils
+from ..terms.typing import Terms
 
 
 class HermitianOperator:  # pylint: disable=R0903
@@ -15,7 +16,7 @@ class HermitianOperator:  # pylint: disable=R0903
 
     @staticmethod
     def __build_local_sectors(
-        sectors: Sectors, terms: dict, matrix: np.ndarray | nps.dok_array
+        sectors: Sectors, terms: Terms, matrix: np.ndarray | nps.dok_array
     ):
         for start, end, sector in sectors:
             matrix[start:end, start:end] = terms_utils.apply(
@@ -27,7 +28,7 @@ class HermitianOperator:  # pylint: disable=R0903
 
     @staticmethod
     def __build_mixing_sectors(
-        sectors: Sectors, terms: dict, matrix: np.ndarray | nps.dok_array
+        sectors: Sectors, terms: Terms, matrix: np.ndarray | nps.dok_array
     ):
         for (start0, end0, sector0), (
             start1,
@@ -44,7 +45,7 @@ class HermitianOperator:  # pylint: disable=R0903
     @staticmethod
     def build(
         sectors: Sectors,
-        terms: dict,
+        terms: Terms,
         sparsity: typing.Literal["sparse", "dense"] = "dense",
         dtype: npt.DTypeLike = None,
     ) -> np.ndarray | nps.csr_array:
@@ -55,8 +56,9 @@ class HermitianOperator:  # pylint: disable=R0903
         ----------
         sectors : Sectors
             Sectors in which operator should be constructed.
-        terms : dict
-            Terms of the model in which operator should be constructed.
+        terms : Terms
+            Dictionary with terms.
+            See `pystrel.terms` for more details.
         sparsity : typing.Literal["sparse", "dense"]
             Matrix sparsity type which is used, by default "dense".
             If "sparse" is selected, returns matrix in CSR format.

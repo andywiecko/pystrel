@@ -18,6 +18,7 @@ from . import sectors
 from .terms import utils as terms_utils
 from .operators import utils as operators_utils
 from .parameters import Parameters
+from .terms.typing import Terms
 
 
 class Model:
@@ -38,17 +39,18 @@ class Model:
             See `pystrel.parameters.Parameters` for more details.
         """
         self.params: Parameters = params
-        self.terms: dict[str, dict] = params.get("terms", {})
+        self.terms: Terms = params.get("terms", {})
         self.sectors = sectors.Sectors(params)
 
-    def update_terms(self, terms: dict):
+    def update_terms(self, terms: Terms):
         """
         Update the `terms` for the model.
 
         Parameters
         ----------
-        terms : dict
+        terms : Terms
             Dictionary with terms to update.
+            See `pystrel.terms` for more details.
 
         Examples
         --------

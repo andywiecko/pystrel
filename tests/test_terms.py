@@ -9,6 +9,7 @@ import numpy.testing as npt
 import scipy.sparse as nps  # type: ignore
 import scipy.special as sps  # type: ignore
 import pystrel.terms as ps
+from pystrel.terms.typing import Terms
 
 # pylint: disable=R0903,C0115,R0801
 
@@ -88,7 +89,7 @@ def test_identify_particle_type(terms: dict[str, dict], expected: str):
         ({"fake0": {}, "fake2": {}}, "parity grand canonical"),
     ],
 )
-def test_identify_ensemble(terms: dict[str, dict], expected: str):
+def test_identify_ensemble(terms: Terms, expected: str):
     assert ps.utils.identify_ensemble(terms) == expected
 
 
@@ -103,7 +104,7 @@ def test_identify_ensemble(terms: dict[str, dict], expected: str):
         ({"fake0": {}, "fake2": {}}, {2}),
     ],
 )
-def test_collect_mixing_sector_ranks(terms: dict[str, dict], expected: set[int]):
+def test_collect_mixing_sector_ranks(terms: Terms, expected: set[int]):
     assert ps.utils.collect_mixing_sector_ranks(terms) == expected
 
 
@@ -118,7 +119,7 @@ def test_collect_mixing_sector_ranks(terms: dict[str, dict], expected: set[int])
         ({"fake0": {}, "fake2": {}}, 1, np.zeros((10, 10))),
     ],
 )
-def test_apply(terms: dict[str, dict], rank, expected):
+def test_apply(terms: Terms, rank, expected):
     assert (ps.utils.apply(terms, np.zeros((10, 10)), (0, 0), rank) == expected).all()
 
 

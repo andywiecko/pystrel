@@ -18,7 +18,9 @@ class Term:  # pylint: disable=R0903
 
     @staticmethod  # pylint: disable=W0613
     def apply(
-        params: dict, matrix: np.ndarray | nps.dok_array, sector: tuple[int, int]
+        params: dict | typing.Any,
+        matrix: np.ndarray | nps.dok_array,
+        sector: tuple[int, int],
     ):
         """
         Applies terms on given `matrix` using `params`.
