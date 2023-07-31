@@ -19,6 +19,7 @@ from .terms import utils as terms_utils
 from .operators import utils as operators_utils
 from .parameters import Parameters
 from .terms.typing import Terms
+from .operators.typing import Operator
 
 
 class Model:
@@ -109,7 +110,7 @@ class Model:
 
     def build_operator(
         self,
-        tag: str,
+        tag: Operator,
         device: typing.Literal["cpu", "gpu"] = "cpu",
         sparsity: typing.Literal["sparse", "dense"] = "dense",
         dtype: npt.DTypeLike = None,
@@ -120,7 +121,7 @@ class Model:
 
         Parameters
         ----------
-        tag : str
+        tag : Operator
             Tag of selected operator. See `pystrel.operators` to see available operators.
         device : typing.Literal["cpu", "gpu"], optional
             Device on which hamiltonian should be constructed, by default "cpu".
