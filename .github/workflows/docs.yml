@@ -27,12 +27,12 @@ jobs:
         run: flit install
 
       - name: Build docs
-        run: pdoc --math --docformat=numpy pystrel/ -o docs/
+        run: make docs
 
       - name: Upload artifacts
         uses: actions/upload-pages-artifact@v1
         with:
-          path: docs/
+          path: site/
 
   deploy:
     needs: build

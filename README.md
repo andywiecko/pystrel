@@ -2,8 +2,7 @@
 
 Library for *exact* calculations of strongly correlated systems.
 
-> [!WARNING]
->
+> **Warning**  
 > This package is currently in a preview state.
 > The API is subject to change without advance notice.
 > It is not recommended for production usage.
@@ -62,19 +61,24 @@ TBA (after releasing v1, package should be uploaded to pip)
 This package is designed to easily switch between CPU and GPU target devices. 
 To enable GPU computation, you need to install [`CUDA`][CUDA]/[`ROCm`][ROCM] (depending on the GPU manufacturer) and then [`cupy`][cupy].
 
-## Example
 
-To explore the supported options for the `Model`, please visit the [documentation page][docs].
+## Examples
+
+Below, you can find an example usage of the package for solving the eigenproblem of the given Hamiltonian (with periodic boundary condition):
+
+$$
+H = -J\sum_{i=1}^L \sigma^z_i\sigma^z_{i+1} + \sum_{i=1}^L (-1)^i \sigma^z_i.
+$$
 
 ```python
-import numpy as np
 import pystrel as ps
 
 L = 10
+J = 1.0
 params = {
     "sites": L,
     "terms": {
-        'Jz': {(i, (i+1) % L): 1.0 for i in range(L)},
+        'Jz': {(i, (i+1) % L): -J for i in range(L)},
         'hz': {i: (-1.0)**i for i in range(L)},
     },
 }
@@ -82,6 +86,14 @@ model = ps.Model(params)
 h = model.build_hamiltonian(device='cpu', sparsity='dense')
 e, v = ps.spectrum.get_full_spectrum(h)
 ```
+
+Visit the [documentation page][docs] for more details.
+To learn about advanced usage, please refer to the following tutorials:
+
+- [Example 01 - Basics][example01]
+- [Example 02 - Dynamics][example02]
+
+Tutorial notebooks can be found and downloaded from the project repository: [`examples/`][examples].
 
 ## Upcoming features
 
@@ -103,3 +115,6 @@ List of the tasks to consider before the first release:
 [ROCm]:https://github.com/RadeonOpenCompute/ROCm
 [cupy]:https://cupy.dev/
 [docs]:https://andywiecko.github.io/pystrel
+[examples]: https://github.com/andywiecko/pystrel/tree/main/examples
+[example01]: https://andywiecko.github.io/pystrel/01-basics.html
+[example02]: https://andywiecko.github.io/pystrel/02-dynamics.html
