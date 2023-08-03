@@ -1,13 +1,17 @@
 import pytest
 import numpy as np
 import numpy.testing as npt
+import scipy.sparse as nps  # type: ignore
 import pystrel as ps
 
 
 @pytest.mark.parametrize("a", [0.1, 1.0, 2.0])
 @pytest.mark.parametrize("b", [0.5, 1.0, 2.5])
 @pytest.mark.parametrize("method", ["rk4", "cheb"])
-def test_time_independent_hamiltonian_rabi_oscilations(a: float, b: float, method):
+@pytest.mark.parametrize("sparsity", ["sparse", "dense"])
+def test_time_independent_hamiltonian_rabi_oscilations(
+    a: float, b: float, method, sparsity
+):
     r"""
     Rabi oscillations example
     ------
@@ -28,6 +32,7 @@ def test_time_independent_hamiltonian_rabi_oscilations(a: float, b: float, metho
     sz = np.array([[1.0, 0], [0, -1]])
     sx = np.array([[0.0, 1], [1, 0]])
     h = a * sz + b * sx
+    h = h if sparsity == "dense" else nps.csr_array(h)
 
     t = 0.0
     dt = 0.01
@@ -53,7 +58,10 @@ def test_time_independent_hamiltonian_rabi_oscilations(a: float, b: float, metho
 @pytest.mark.parametrize("a", [2.0, 1.1, 0.33])
 @pytest.mark.parametrize("b", [1.0, 0.1, 3.5])
 @pytest.mark.parametrize("method", ["rk4", "cheb"])
-def test_time_dependent_hamiltonian_landau_zener_transition(a: float, b: float, method):
+@pytest.mark.parametrize("sparsity", ["dense", "sparse"])
+def test_time_dependent_hamiltonian_landau_zener_transition(  # pylint: disable=R0914
+    a: float, b: float, method, sparsity
+):
     r"""
     Landau-Zener transition example
     -------
@@ -72,20 +80,25 @@ def test_time_dependent_hamiltonian_landau_zener_transition(a: float, b: float, 
     """
     sz = np.array([[1.0, 0], [0, -1]])
     sx = np.array([[0.0, 1], [1, 0]])
-    h = lambda t: 0.5 * (a * sz * t + b * sx)  # pylint: disable=C3001
+    hx = lambda t: 0.5 * (a * sz * t + b * sx)  # pylint: disable=C3001
+    h = hx if sparsity == "dense" else lambda t: nps.csr_array(hx(t))
 
     T = 10.0
     t = -T
     dt = 0.05
 
-    _, v = ps.spectrum.get_full_spectrum(h(-T))
+    _, v = ps.spectrum.get_full_spectrum(
+        h(-T) if sparsity == "dense" else h(-T).toarray()
+    )
     psi = v[0].astype(np.complex128)
 
     while t < T:
         psi = ps.propagate(psi, h, t, dt, method)
         t += dt
 
-    _, v = ps.spectrum.get_full_spectrum(h(+T))
+    _, v = ps.spectrum.get_full_spectrum(
+        h(+T) if sparsity == "dense" else h(+T).toarray()
+    )
     psi0 = v[0].astype(np.complex128)
     p = ps.project(psi0, psi)
     p_expected = 1 - np.exp(-np.pi / 2.0 * b**2 / a)

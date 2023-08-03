@@ -6,10 +6,14 @@ import numpy as np
 import scipy.sparse as nps  # type: ignore
 import scipy.special as sps  # type: ignore
 
+# pylint: disable=R0801
 try:
     import cupy as cp  # type: ignore
+    import cupy.sparse as cps  # type: ignore
 except ImportError:
     cp = None
+    cps = None
+# pylint: enable=R0801
 
 
 def propagate(
@@ -179,9 +183,13 @@ def __cheb_solver_const(
     def c_k(k, t):
         return (-1.0j) ** k * sps.jv(k, t)
 
-    xp = np if cp is None else cp.get_array_module(hamiltonian)
+    def norm(h):
+        xp = np if cp is None else cp.get_array_module(hamiltonian)
+        xps = nps if xp is np else cps
+        return (xps if xps.issparse(h) else xp).linalg.norm(h)
+
     m: int = kwargs.get("m", 5)
-    rho = 1.01 * xp.linalg.norm(hamiltonian)
+    rho = 1.01 * norm(hamiltonian)
     alpha = [(2 if i > 0 else 1.0) * c_k(i, rho * dt) for i in range(m)]
     h = hamiltonian / rho
 
