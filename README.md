@@ -90,8 +90,9 @@ e, v = ps.spectrum.get_full_spectrum(h)
 Visit the [documentation page][docs] for more details.
 To learn about advanced usage, please refer to the following tutorials:
 
-- [Example 01 - Basics][example01]
-- [Example 02 - Dynamics][example02]
+- [**Example 01** – Basics][example01]
+- [**Example 02** – Dynamics][example02]
+- [**Example 03** – $t$-$V$ model][example03]
 
 Tutorial notebooks can be found and downloaded from the project repository: [`examples/`][examples].
 
@@ -118,3 +119,4 @@ List of the tasks to consider before the first release:
 [examples]: https://github.com/andywiecko/pystrel/tree/main/examples
 [example01]: https://andywiecko.github.io/pystrel/01-basics.html
 [example02]: https://andywiecko.github.io/pystrel/02-dynamics.html
+[example03]: https://andywiecko.github.io/pystrel/03-tv-model.html
