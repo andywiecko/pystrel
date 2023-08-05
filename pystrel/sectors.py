@@ -5,6 +5,7 @@ import typing
 import scipy.special as sps  # type: ignore
 from . import terms
 from .parameters import Parameters
+from . import combinadics
 
 
 class Sectors:
@@ -73,6 +74,64 @@ class Sectors:
 
     def __str__(self):
         return str(self.sectors)
+
+    def get_base_state(self, index: int) -> str:
+        """
+        Returns base state for given `index`.
+
+        Parameters
+        ----------
+        index : int
+            Index of base state, in range [0, `self.size`).
+
+        Returns
+        -------
+        str
+            State for corresponding `index`, e.g. `'001010'`.
+
+        Raises
+        ------
+        IndexError
+            When `index` is out of range sectors size.
+        """
+        if index >= self.size or index < 0:
+            raise IndexError(f"Index {index} is out or range sectors size {self.size}!")
+
+        ret = ""
+        for i, (start, end) in enumerate(zip(self.starts, self.ends)):
+            if start <= index < end:
+                s = self.sectors[i]
+                ret = combinadics.tostate(number=index - start, n=s[0], k=s[1])
+                break
+        return ret
+
+    def get_base_state_id(self, state: str) -> int:
+        """
+        Returns index for the given `state`.
+
+        Parameters
+        ----------
+        state : str
+            Base state e.g. `'00001100'`.
+
+        Returns
+        -------
+        int
+            Index which corresponds to the given base `state`.
+
+        Raises
+        ------
+        ValueError
+            If there is no compatible sector with the given `state`.
+        """
+        L = len(state)
+        N = state.count("1")
+        sector = (L, N)
+        if (sector) not in self.sectors:
+            raise ValueError(f"There is no sector with {L} sites and {N} particles!")
+
+        i = self.sectors.index(sector)
+        return self.starts[i] + combinadics.tonumber(state)
 
     def mixing_iter(self):
         """

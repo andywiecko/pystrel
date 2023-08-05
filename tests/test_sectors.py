@@ -179,3 +179,27 @@ def test_generate_sectors(ensemble, params, expected):
 def test_generate_mixing_sectors(ranks, sectors, expected):
     mixing_sectors = ps.generate_mixing_sectors(ranks, sectors)
     assert mixing_sectors == expected
+
+
+def test_get_base_state():
+    s = ps.Sectors({"sectors": [(3, 0), (3, 1), (3, 2)]})
+    states = [s.get_base_state(i) for i in range(7)]
+    assert states == ["000", "001", "010", "100", "011", "101", "110"]
+
+
+@pytest.mark.parametrize("i", [-1, 8, 9])
+def test_get_base_state_out_of_range(i):
+    with pytest.raises(IndexError):
+        _ = ps.Sectors({"sectors": [(3, 0), (3, 1), (3, 2)]}).get_base_state(i)
+
+
+def test_get_base_state_id():
+    s = ps.Sectors({"sectors": [(3, 0), (3, 1), (3, 2)]})
+    ids = [s.get_base_state_id(i) for i in ["001", "010", "100"]]
+    assert ids == [1, 2, 3]
+
+
+@pytest.mark.parametrize("state", ["0000", "111"])
+def test_get_base_state_id_value_error(state):
+    with pytest.raises(ValueError):
+        _ = ps.Sectors({"sectors": [(3, 0), (3, 1), (3, 2)]}).get_base_state_id(state)
