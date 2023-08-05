@@ -127,3 +127,41 @@ def test_model_update_terms_exception():
         params = {"terms": {"t": {(0, 1): 1.0}}}
         model = ps.Model(params)
         model.update_terms({"t": {(0, 1): 2.0, (1, 2): 2.0}, "Delta": {(0, 1): 2.0}})
+
+
+@pytest.mark.parametrize(
+    "state, expected",
+    [
+        ("000", np.array([1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])),
+        ("001", np.array([0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])),
+        ("010", np.array([0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0])),
+        ("100", np.array([0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0])),
+        ("111", np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0])),
+    ],
+)
+def test_model_build_base_state(state: str, expected: np.ndarray):
+    model = ps.Model({"sites": 3, "terms": {"hx": {}}})
+    s = model.build_base_state(state)
+    npt.assert_array_equal(s, expected)
+
+
+@pytest.mark.parametrize("dtype", [np.float32, np.float64, np.complex64, np.complex128])
+def test_model_build_base_state_dtype(dtype):
+    model = ps.Model({"sites": 3, "terms": {"hx": {}}})
+    s = model.build_base_state("000", dtype=dtype)
+    assert s.dtype == dtype
+
+
+def test_model_build_base_state_gpu_error():
+    module = ps.model.cp
+    with pytest.raises(ImportError):
+        ps.model.cp = None
+        model = ps.Model({"sites": 3, "terms": {"hx": {}}})
+        _ = model.build_base_state("000", device="gpu")
+        ps.model.cp = module
+
+
+def test_model_build_base_state_not_supported_device():
+    with pytest.raises(ValueError):
+        model = ps.Model({"sites": 3, "terms": {"hx": {}}})
+        _ = model.build_base_state("000", device="qwerty")
