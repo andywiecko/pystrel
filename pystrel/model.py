@@ -169,6 +169,47 @@ class Model:
             case _:
                 return matrix
 
+    def build_base_state(
+        self,
+        state: str,
+        device: typing.Literal["cpu", "gpu"] = "cpu",
+        dtype: npt.DTypeLike = None,
+    ) -> np.ndarray | typing.Any:
+        """
+        Construct base `state` using the following model.
+
+        Parameters
+        ----------
+        state : str
+            Base state string representation, e.g. `"00010101"`.
+        device : typing.Literal["cpu", "gpu"], optional
+            Device on which state should be constructed, by default "cpu".
+        dtype : npt.DTypeLike, optional
+            Any object that can be interpreted as a numpy data type.
+
+        Returns
+        -------
+        np.ndarray | typing.Any
+            State vector representation.
+
+        Raises
+        ------
+        ImportError
+            If `device="gpu"` is selected and `cupy` is not found.
+        ValueError
+            If not recognized option for `device` is selected.
+        """
+        if device == "gpu" and cp is None:
+            raise ImportError()
+        if device not in ["gpu", "cpu"]:
+            raise ValueError()
+
+        i = self.sectors.get_base_state_id(state)
+        xp = {"cpu": np, "gpu": cp}.get(device, np)
+        s = xp.zeros(self.sectors.size, dtype)
+        s[i] = 1
+        return s
+
     def __str__(self):
         return (
             "# " + 16 * "#" + " Info " + 16 * "#" + "\n"
