@@ -186,7 +186,8 @@ def __cheb_solver_const(
     def norm(h):
         xp = np if cp is None else cp.get_array_module(hamiltonian)
         xps = nps if xp is np else cps
-        return (xps if xps.issparse(h) else xp).linalg.norm(h)
+        ret = (xps if xps.issparse(h) else xp).linalg.norm(h)
+        return ret if xp is np else cp.asnumpy(ret)
 
     m: int = kwargs.get("m", 5)
     rho = 1.01 * norm(hamiltonian)
