@@ -94,7 +94,7 @@ To learn about advanced usage, please refer to the following tutorials:
 - [**Example 02** – Dynamics][example02]
 - [**Example 03** – $t$-$V$ model][example03]
 - [**Example 04** – Quantum annealing][example04]
-- **Example 05** – Quantum braiding (WIP)
+- [**Example 05** – Quantum braiding][example05]
 
 Tutorial notebooks can be found and downloaded from the project repository: [`examples/`][examples].
 
@@ -119,7 +119,8 @@ List of the tasks to consider before the first release:
 [cupy]:https://cupy.dev/
 [docs]:https://andywiecko.github.io/pystrel
 [examples]: https://github.com/andywiecko/pystrel/tree/main/examples
-[example01]: https://andywiecko.github.io/pystrel/01-basics.html
-[example02]: https://andywiecko.github.io/pystrel/02-dynamics.html
-[example03]: https://andywiecko.github.io/pystrel/03-tv-model.html
-[example04]: https://andywiecko.github.io/pystrel/04-quantum-annealing.html
+[example01]: 01-basics.html
+[example02]: 02-dynamics.html
+[example03]: 03-tv-model.html
+[example04]: 04-quantum-annealing.html
+[example05]: 05-quantum-braiding.html
