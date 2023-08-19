@@ -119,8 +119,8 @@ List of the tasks to consider before the first release:
 [cupy]:https://cupy.dev/
 [docs]:https://andywiecko.github.io/pystrel
 [examples]: https://github.com/andywiecko/pystrel/tree/main/examples
-[example01]: 01-basics.html
-[example02]: 02-dynamics.html
-[example03]: 03-tv-model.html
-[example04]: 04-quantum-annealing.html
-[example05]: 05-quantum-braiding.html
+[example01]: https://andywiecko.github.io/pystrel/01-basics.html
+[example02]: https://andywiecko.github.io/pystrel/02-dynamics.html
+[example03]: https://andywiecko.github.io/pystrel/03-tv-model.html
+[example04]: https://andywiecko.github.io/pystrel/04-quantum-annealing.html
+[example05]: https://andywiecko.github.io/pystrel/05-quantum-braiding.html
