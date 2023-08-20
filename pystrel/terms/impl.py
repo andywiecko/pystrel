@@ -247,9 +247,8 @@ class Term_mu(Term):
         if isinstance(matrix, np.ndarray):
             np.fill_diagonal(matrix, matrix.diagonal() + params * sector[1])
 
-        elif isinstance(matrix, nps.dok_array):
-            diagonal = range(matrix.shape[0])
-            matrix[diagonal, diagonal] += params * sector[1]
+        elif isinstance(matrix, nps.lil_array):
+            matrix.setdiag(matrix.diagonal() + params * sector[1])
 
         return matrix
 
