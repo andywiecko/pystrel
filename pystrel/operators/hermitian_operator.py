@@ -16,7 +16,7 @@ class HermitianOperator:  # pylint: disable=R0903
 
     @staticmethod
     def __build_local_sectors(
-        sectors: Sectors, terms: Terms, matrix: np.ndarray | nps.dok_array
+        sectors: Sectors, terms: Terms, matrix: np.ndarray | nps.lil_array
     ):
         for start, end, sector in sectors:
             matrix[start:end, start:end] = terms_utils.apply(
@@ -28,7 +28,7 @@ class HermitianOperator:  # pylint: disable=R0903
 
     @staticmethod
     def __build_mixing_sectors(
-        sectors: Sectors, terms: Terms, matrix: np.ndarray | nps.dok_array
+        sectors: Sectors, terms: Terms, matrix: np.ndarray | nps.lil_array
     ):
         for (start0, end0, sector0), (
             start1,
@@ -85,7 +85,7 @@ class HermitianOperator:  # pylint: disable=R0903
                 return matrix
 
             case "sparse":
-                matrix = nps.dok_array(shape, dtype=dtype)
+                matrix = nps.lil_array(shape, dtype=dtype)
                 HermitianOperator.__build_local_sectors(sectors, terms, matrix)
                 HermitianOperator.__build_mixing_sectors(sectors, terms, matrix)
                 matrix = nps.csr_array(matrix + nps.triu(matrix, 1).H)

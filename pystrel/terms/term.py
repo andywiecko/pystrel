@@ -19,7 +19,7 @@ class Term:  # pylint: disable=R0903
     @staticmethod  # pylint: disable=W0613
     def apply(
         params: dict | typing.Any,
-        matrix: np.ndarray | nps.dok_array,
+        matrix: np.ndarray | nps.lil_array,
         sector: tuple[int, int],
     ):
         """
@@ -32,7 +32,7 @@ class Term:  # pylint: disable=R0903
         ----------
         params : dict
             Dictionary of given parameters, e.g. `{(0, 1): 1.0, (1, 2): 2.0}`.
-        matrix : npt.ndarray | nps.dok_array
+        matrix : npt.ndarray | nps.lil_array
             View on matrix on which terms should be applied.
         sector : tuple[int, int]
             Corresponding particle sector for given `matrix`.

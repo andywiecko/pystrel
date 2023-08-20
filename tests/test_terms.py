@@ -338,7 +338,7 @@ def test_term_mu_sparse():
     N = 2
     size = int(sps.binom(L, N))
     params = 2.0
-    matrix = nps.dok_array((size, size))
+    matrix = nps.lil_array((size, size))
     matrix.setdiag(np.arange(size))
 
     matrix = ps.Term_mu.apply(params, matrix, (L, N))
