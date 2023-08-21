@@ -2,9 +2,9 @@
 All `pystrel.terms.term.Term` implementations.
 """
 import numpy as np
-import scipy.sparse as nps  # type: ignore
 from .. import combinadics
 from .term import Term
+from ..sparse import Sparse
 
 # pylint: disable=C0103, R0903
 
@@ -30,7 +30,6 @@ class Term_Jz(Term):
             s = combinadics.tostate(x, sector[0], sector[1])
             for (i, j), Jz in params.items():
                 matrix[x, x] += (+1 if s[i] == s[j] else -1) * Jz
-        return matrix
 
 
 class Term_hz(Term):
@@ -54,7 +53,6 @@ class Term_hz(Term):
             s = combinadics.tostate(x, sector[0], sector[1])
             for i, hz in params.items():
                 matrix[x, x] += (+1 if s[i] == "1" else -1) * hz
-        return matrix
 
 
 class Term_gamma(Term):
@@ -85,7 +83,6 @@ class Term_gamma(Term):
                         matrix[x, y] += gamma
                     else:
                         matrix[y, x] += np.conj(gamma)
-        return matrix
 
 
 class Term_hx(Term):
@@ -112,7 +109,6 @@ class Term_hx(Term):
                     s1 = s0[:i] + "1" + s0[i + 1 :]
                     y = combinadics.tonumber(s1)
                     matrix[x, y] += gamma
-        return matrix
 
 
 class Term_t(Term):
@@ -144,7 +140,6 @@ class Term_t(Term):
                         matrix[x, y] += sign * t
                     else:
                         matrix[y, x] += sign * np.conj(t)
-        return matrix
 
 
 class Term_V(Term):
@@ -169,7 +164,6 @@ class Term_V(Term):
             for (i, j), V in params.items():
                 if s[i] == "1" and s[j] == "1":
                     matrix[x, x] += V
-        return matrix
 
 
 class Term_Delta(Term):
@@ -199,7 +193,6 @@ class Term_Delta(Term):
                     sign = (-1.0) ** combinadics.count_particles_between(s0, i, j)
                     sign = sign if i < j else -sign
                     matrix[x, y] += sign * Delta
-        return matrix
 
 
 class Term_epsilon(Term):
@@ -224,7 +217,6 @@ class Term_epsilon(Term):
             for i, mu in params.items():
                 if s[i] == "1":
                     matrix[x, x] += mu
-        return matrix
 
 
 class Term_mu(Term):
@@ -247,10 +239,8 @@ class Term_mu(Term):
         if isinstance(matrix, np.ndarray):
             np.fill_diagonal(matrix, matrix.diagonal() + params * sector[1])
 
-        elif isinstance(matrix, nps.lil_array):
-            matrix.setdiag(matrix.diagonal() + params * sector[1])
-
-        return matrix
+        elif isinstance(matrix, Sparse):
+            matrix.add_diag(params * sector[1])
 
 
 # pylint: enable=C0103, R0903

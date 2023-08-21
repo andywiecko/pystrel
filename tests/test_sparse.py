@@ -85,3 +85,29 @@ def test_raise_value_error(index):
     with pytest.raises(ValueError):
         s = ps.Sparse((10, 10))
         _ = s[index]
+
+
+def test_add_diag():
+    s = ps.Sparse((10, 10))
+    s0 = s[0:5, 0:5]
+    s0.add_diag(1.0)  # pylint: disable=E1101
+    s1 = s[5:10, 5:10]
+    s1.add_diag(2.0)  # pylint: disable=E1101
+
+    arr = s.to_csr().toarray()
+    expected = np.diag(
+        [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+        ]
+    )
+
+    npt.assert_equal(arr, expected)
