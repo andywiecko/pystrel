@@ -16,7 +16,7 @@ class FakeA(ps.terms.Term):
     @staticmethod
     def apply(params: dict, matrix: np.ndarray, sector: tuple[int, int]):
         matrix[:] += 1.0
-        return np.triu(matrix)
+        matrix[:] = np.triu(matrix)
 
 
 class FakeB(ps.terms.Term):
@@ -29,7 +29,6 @@ class FakeB(ps.terms.Term):
     @staticmethod
     def apply(params: dict, matrix: np.ndarray, sector: tuple[int, int]):
         matrix[:] += 2.0
-        return matrix
 
 
 class FakeC(ps.terms.Term):
@@ -42,7 +41,6 @@ class FakeC(ps.terms.Term):
     @staticmethod
     def apply(params: dict, matrix: np.ndarray, sector: tuple[int, int]):
         matrix[:] += 4.0
-        return matrix
 
 
 # pylint: enable=R0903,C0115

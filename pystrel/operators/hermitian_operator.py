@@ -9,6 +9,7 @@ import scipy.sparse as nps  # type: ignore
 from ..sectors import Sectors
 from ..terms import utils as terms_utils
 from ..terms.typing import Terms
+from ..sparse import Sparse
 
 
 class HermitianOperator:  # pylint: disable=R0903
@@ -16,10 +17,10 @@ class HermitianOperator:  # pylint: disable=R0903
 
     @staticmethod
     def __build_local_sectors(
-        sectors: Sectors, terms: Terms, matrix: np.ndarray | nps.lil_array
+        sectors: Sectors, terms: Terms, matrix: np.ndarray | Sparse
     ):
         for start, end, sector in sectors:
-            matrix[start:end, start:end] = terms_utils.apply(
+            terms_utils.apply(
                 terms=terms,
                 matrix=matrix[start:end, start:end],
                 sector=sector,
@@ -28,14 +29,14 @@ class HermitianOperator:  # pylint: disable=R0903
 
     @staticmethod
     def __build_mixing_sectors(
-        sectors: Sectors, terms: Terms, matrix: np.ndarray | nps.lil_array
+        sectors: Sectors, terms: Terms, matrix: np.ndarray | Sparse
     ):
         for (start0, end0, sector0), (
             start1,
             end1,
             sector1,
         ) in sectors.mixing_iter():
-            matrix[start0:end0, start1:end1] = terms_utils.apply(
+            terms_utils.apply(
                 terms=terms,
                 matrix=matrix[start0:end0, start1:end1],
                 sector=sector0,
@@ -85,11 +86,11 @@ class HermitianOperator:  # pylint: disable=R0903
                 return matrix
 
             case "sparse":
-                matrix = nps.lil_array(shape, dtype=dtype)
-                HermitianOperator.__build_local_sectors(sectors, terms, matrix)
-                HermitianOperator.__build_mixing_sectors(sectors, terms, matrix)
-                matrix = nps.csr_array(matrix + nps.triu(matrix, 1).H)
-                return matrix
+                sparse = Sparse(shape)
+                HermitianOperator.__build_local_sectors(sectors, terms, sparse)
+                HermitianOperator.__build_mixing_sectors(sectors, terms, sparse)
+                csr = sparse.to_csr(dtype=dtype)
+                return csr + nps.triu(csr, 1).H
 
             case _:
                 raise ValueError()

@@ -132,7 +132,7 @@ def apply(
     matrix: np.ndarray | nps.lil_array,
     sector: tuple[int, int],
     rank: int,
-) -> np.ndarray | nps.lil_array:
+):
     """
     Applies all `terms` of given `rank` on `matrix` within given `sector`.
 
@@ -156,8 +156,7 @@ def apply(
     for t, params in terms.items():
         term = __tag_to_term[t]
         if rank == term.mixing_rank:
-            matrix = term.apply(params, matrix, sector)
-    return matrix
+            term.apply(params, matrix, sector)
 
 
 def info():

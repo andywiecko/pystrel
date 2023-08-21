@@ -131,6 +131,18 @@ class Sparse:
         self.rows.append(index[0] + self.offset[0])
         self.cols.append(index[1] + self.offset[1])
 
+    def add_diag(self, value: np.float64 | np.complex128 | typing.Any):
+        """
+        Add `value` to matrix diagonal.
+
+        Parameters
+        ----------
+        value : np.float64 | np.complex128 | typing.Any
+            Value to insert
+        """
+        for i in range(min(self.shape)):
+            self.add((i, i), value)
+
     def to_csr(self, dtype=None) -> sp.csr_array:
         """Construct `scipy.sparse.csr_array`.
 

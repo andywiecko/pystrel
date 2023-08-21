@@ -6,10 +6,10 @@ We could introduce abstraction for the combinadics, however, this is not worth t
 import pytest
 import numpy as np
 import numpy.testing as npt
-import scipy.sparse as nps  # type: ignore
 import scipy.special as sps  # type: ignore
 import pystrel.terms as ps
 from pystrel.terms.typing import Terms
+from pystrel.sparse import Sparse
 
 # pylint: disable=R0903,C0115,R0801
 
@@ -120,7 +120,9 @@ def test_collect_mixing_sector_ranks(terms: Terms, expected: set[int]):
     ],
 )
 def test_apply(terms: Terms, rank, expected):
-    assert (ps.utils.apply(terms, np.zeros((10, 10)), (0, 0), rank) == expected).all()
+    m = np.zeros((10, 10))
+    ps.utils.apply(terms, m, (0, 0), rank)
+    assert (m == expected).all()
 
 
 def test_term_Jz():  # pylint: disable=C0103
@@ -130,7 +132,7 @@ def test_term_Jz():  # pylint: disable=C0103
     params = {(i, (i + 1) % L): 1.0 for i in range(L - 1)}
     matrix = np.zeros((size, size))
 
-    matrix = ps.Term_Jz.apply(params, matrix, sector)
+    ps.Term_Jz.apply(params, matrix, sector)
     eig = np.linalg.eigvalsh(matrix, "U")
 
     assert (eig == np.array([-3.0, -3, -1, -1, 1, 1])).all()
@@ -143,7 +145,7 @@ def test_term_hz():
     params = {0: 1.0, 1: 2.0, 2: 4.0, 3: 8.0}
     matrix = np.zeros((size, size))
 
-    matrix = ps.Term_hz.apply(params, matrix, sector)
+    ps.Term_hz.apply(params, matrix, sector)
     eig = np.linalg.eigvalsh(matrix, "U")
 
     assert (eig == np.array([-9.0, -5, -3, +3, +5, +9])).all()
@@ -156,7 +158,7 @@ def test_term_gamma():
     params = {(i, (i + 1) % L): 1.0 for i in range(L)}
     matrix = np.zeros((size, size))
 
-    matrix = ps.Term_gamma.apply(params, matrix, sector)
+    ps.Term_gamma.apply(params, matrix, sector)
     eig = np.linalg.eigvalsh(matrix, "U")
 
     npt.assert_allclose(
@@ -170,7 +172,7 @@ def test_term_hx():
     params = {i: 1.0 for i in range(L)}
     matrix = np.zeros((6, 4))
 
-    matrix = ps.Term_hx.apply(params, matrix, sector)
+    ps.Term_hx.apply(params, matrix, sector)
 
     m = np.zeros((10, 10))
     m[:6, 6:] = matrix
@@ -225,7 +227,7 @@ def test_term_t(L, N):
     params = {(i, (i + 1) % L): 1.0 for i in range(L)}
     matrix = np.zeros((size, size))
 
-    matrix = ps.Term_t.apply(params, matrix, sector)
+    ps.Term_t.apply(params, matrix, sector)
     eig = np.linalg.eigvalsh(matrix, "U")
 
     # It can be shown that model ∑ᵢⱼ a†ᵢaⱼ + h.c.
@@ -250,7 +252,7 @@ def test_term_V():  # pylint: disable=C0103
     params = {(0, 1): 1.0, (1, 2): 2.0, (2, 3): 4.0, (3, 0): -1}
     matrix = np.zeros((size, size))
 
-    matrix = ps.Term_V.apply(params, matrix, (L, N))
+    ps.Term_V.apply(params, matrix, (L, N))
     eig = np.linalg.eigvalsh(matrix, "U")
 
     npt.assert_array_equal(eig, [-1.0, 0, 0, 1, 2, 4])
@@ -285,7 +287,7 @@ def test_term_Delta(L: int, P: int):  # pylint: disable=C0103,R0914
         a1 = a0 + sizeA
         b0 = offset + sizeA
         b1 = b0 + sizeB
-        matrix[a0:a1, b0:b1] = ps.Term_Delta.apply(params, matrix[a0:a1, b0:b1], (L, N))
+        ps.Term_Delta.apply(params, matrix[a0:a1, b0:b1], (L, N))
         offset += sizeA
     eig = np.linalg.eigvalsh(matrix, "U")
 
@@ -313,7 +315,7 @@ def test_term_epsilon():
     params = {0: 1.0, 1: 2, 2: 4, 3: 8}
     matrix = np.zeros((size, size))
 
-    matrix = ps.Term_epsilon.apply(params, matrix, (L, N))
+    ps.Term_epsilon.apply(params, matrix, (L, N))
     eig = np.linalg.eigvalsh(matrix, "U")
 
     npt.assert_array_equal(eig, [3.0, 5, 6, 9, 10, 12])
@@ -327,7 +329,7 @@ def test_term_mu():
     matrix = np.zeros((size, size))
     np.fill_diagonal(matrix, np.arange(size))
 
-    matrix = ps.Term_mu.apply(params, matrix, (L, N))
+    ps.Term_mu.apply(params, matrix, (L, N))
     eig = np.linalg.eigvalsh(matrix, "U")
 
     npt.assert_array_equal(eig, [4.0, 5, 6, 7, 8, 9])
@@ -338,10 +340,11 @@ def test_term_mu_sparse():
     N = 2
     size = int(sps.binom(L, N))
     params = 2.0
-    matrix = nps.lil_array((size, size))
-    matrix.setdiag(np.arange(size))
+    matrix = Sparse((size, size))
+    for i in range(size):
+        matrix.add((i, i), float(i))
 
-    matrix = ps.Term_mu.apply(params, matrix, (L, N))
-    eig = np.linalg.eigvalsh(matrix.toarray(), "U")
+    ps.Term_mu.apply(params, matrix, (L, N))
+    eig = np.linalg.eigvalsh(matrix.to_csr().toarray(), "U")
 
     npt.assert_array_equal(eig, [4.0, 5, 6, 7, 8, 9])
