@@ -10,4 +10,4 @@ from .laboratory import measure, project
 from .model import Model
 from .parameters import Parameters
 
-__version__ = "0.0.0"
+__version__ = "0.1.0"
