@@ -21,6 +21,40 @@ If you encounter any issues or have suggestions for improvement, please feel fre
 
 We hope this library enhances your research on strongly correlated systems. Happy computing!
 
+## Installation
+
+<details open>
+<summary> Install with wheel file </summary>
+
+1. Download wheel file from the [releases page](https://github.com/andywiecko/pystrel/releases).
+2. Install wheel with `pip`
+```
+pip install pystrel-0.1.0-py3-none-any.whl
+```
+</details>
+
+<details>
+<summary> Install with <code>git</code></summary>
+
+1. Clone repository 
+```
+git clone https://github.com/andywiecko/pystrel
+```
+
+2. Install `flit` (if necessary)
+```
+pip install flit
+```
+
+3. Install package (including dev tools)
+```
+flit install
+```
+</details>
+
+<details>
+<summary> Install with <code>pip</code> (TBA with v1.0) </summary>
+</details>
 
 ## Supported models
 
@@ -42,19 +76,6 @@ We hope this library enhances your research on strongly correlated systems. Happ
 | `hz`         | $\sum_{i} h_{i}^z \, \sigma_i^z$                                                 |
 | `gamma`      | $\sum_{i,j} \left(\gamma_{ij} \, \sigma_i^+\sigma_j^- + \text{h.c.}\right)$      |
 | `hx`         | $\sum_{i} h_{i}^x \, \sigma_i^x$                                                 |
-
-
-### Spinfull fermions
-
-TBA
-
-### tJ-model particles
-
-TBA
-
-## Installation
-
-TBA (after releasing v1, package should be uploaded to pip)
 
 ## Accelerate computation with GPU
 
@@ -109,21 +130,19 @@ However, in dynamic contexts, there might not be a noticeable speedup from paral
 > **Note**  
 > Please be aware that performance characteristics may change in future versions.
 
-## Upcoming features
+## Roadmap for v1.0.0
 
-List of the tasks to consider before the first release:
+List of the tasks to consider before the `v1.0.0` release:
 
-- [ ] topology utils
-- [ ] state class
-- [ ] additional terms: 3dim (tJ like), 4 dim (Hubbard like)
-- [X] ~~quantum dynamics: RK4, chebyshev~~
-- [X] ~~energy calculation: ground state, full spectrum~~
-- [ ] LIOMs
-- [ ] operators: ~~spinless fermions~~, spins
-- [ ] parameters json/yaml load
-- [ ] example notebooks
-- [ ] benchmarks
-- [X] ~~ci/cd~~
+- [ ] perf: state class
+- [ ] perf: gpu kernels
+- [ ] perf: numba acceleration
+- [ ] feat: topology utils
+- [ ] feat: additional terms: 3dim (tJ like), 4 dim (Hubbard like)
+- [ ] feat: lioms
+- [ ] feat: additional operators
+- [ ] feat: parameters json/yaml load
+
 
 [CUDA]:https://developer.nvidia.com/cuda-downloads
 [ROCm]:https://github.com/RadeonOpenCompute/ROCm
