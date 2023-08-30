@@ -98,6 +98,17 @@ To learn about advanced usage, please refer to the following tutorials:
 
 Tutorial notebooks can be found and downloaded from the project repository: [`examples/`][examples].
 
+## Benchmark
+
+For performance benchmarking using CPU/GPU, please refer to the results available [**here**][benchmark].
+Keep in mind that performance may vary based on your machine's specifications and the specific problem being solved. 
+
+It's worth noting that GPUs tend to perform better with dense matrices, whereas CPUs show better performance with sparse matrices. 
+However, in dynamic contexts, there might not be a noticeable speedup from parallelization.
+
+> **Note**  
+> Please be aware that performance characteristics may change in future versions.
+
 ## Upcoming features
 
 List of the tasks to consider before the first release:
@@ -124,3 +135,4 @@ List of the tasks to consider before the first release:
 [example03]: https://andywiecko.github.io/pystrel/03-tv-model.html
 [example04]: https://andywiecko.github.io/pystrel/04-quantum-annealing.html
 [example05]: https://andywiecko.github.io/pystrel/05-quantum-braiding.html
+[benchmark]: https://andywiecko.github.io/pystrel/benchmark.html
